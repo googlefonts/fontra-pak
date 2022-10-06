@@ -30,20 +30,22 @@ jobs:
       run: |
         pyinstaller FontraPak.spec -y
 
-    - name: Create Windows zip
-      if: runner.os == 'Windows'
-      run: |
-        cd dist
-        zip -r -q FontraPack.exe.zip "Fontra Pak.exe"
-
-    - name: Create Mac zip
+    - name: Create Mac .app.zip
       if: runner.os == 'macOS'
       run: |
         cd dist
         zip -r -q -y FontraPack.app.zip "Fontra Pak.app"
 
-    - name: Storing Artifacts
+    - name: Storing Windows Artifacts
+      if: runner.os == 'Windows'
       uses: actions/upload-artifact@master
       with:
-        name: Fontra Pak ${{ runner.os }}
-        path: ./*.zip
+        name: Fontra Pak Windows
+        path: ./dist/*.exe
+
+    - name: Storing macOS Artifacts
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@master
+      with:
+        name: Fontra Pak macOS
+        path: ./dist/*.zip
