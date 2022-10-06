@@ -2,6 +2,7 @@ import asyncio
 import functools
 from urllib.parse import quote
 import webbrowser
+import socket
 import sys
 
 from aiohttp import web
@@ -30,8 +31,9 @@ border-style: dashed
 
 
 class FontraMainWidget(QMainWindow):
-    def __init__(self, closeCallback):
+    def __init__(self, port, closeCallback):
         super().__init__()
+        self.port = port
         self.closeCallback = closeCallback
         self.setWindowTitle("Fontra Shell — Drag and Drop Font Files")
         self.resize(720, 480)
@@ -73,7 +75,9 @@ class FontraMainWidget(QMainWindow):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
             path = quote(path, safe="")
-            webbrowser.open(f"http://localhost:8000/editor/-/{path}?text=%22Hello%22")
+            webbrowser.open(
+                f"http://localhost:{self.port}/editor/-/{path}?text=%22Hello%22"
+            )
         event.acceptProposedAction()
 
     @asyncClose
@@ -82,6 +86,23 @@ class FontraMainWidget(QMainWindow):
         self.settings.setValue("size", self.size())
         self.settings.setValue("pos", self.pos())
         await self.closeCallback()
+
+
+def getFreeTCPPort(startPort=8000):
+    port = startPort
+    while True:
+        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            tcp.bind(("", port))
+        except OSError as e:
+            if e.errno != 48:
+                raise
+            port += 1
+        else:
+            break
+        finally:
+            tcp.close()
+    return port
 
 
 async def main():
@@ -98,20 +119,22 @@ async def main():
             functools.partial(close_future, future, loop)
         )
 
+    port = getFreeTCPPort()
+
     manager = FileSystemProjectManager(None)
     server = FontraServer(
         host="localhost",
-        httpPort=8000,
+        httpPort=port,
         projectManager=manager,
     )
     server.setup()
 
     runner = web.AppRunner(server.httpApp)
     await runner.setup()
-    site = web.TCPSite(runner, "localhost", 8000)
+    site = web.TCPSite(runner, "localhost", port)
     await site.start()
 
-    mainWindow = FontraMainWidget(runner.cleanup)
+    mainWindow = FontraMainWidget(port, runner.cleanup)
     mainWindow.show()
 
     await future
