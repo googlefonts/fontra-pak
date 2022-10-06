@@ -35,7 +35,7 @@ class FontraMainWidget(QMainWindow):
         super().__init__()
         self.port = port
         self.closeCallback = closeCallback
-        self.setWindowTitle("Fontra Shell — Drag and Drop Font Files")
+        self.setWindowTitle("Fontra Pak")
         self.resize(720, 480)
 
         self.settings = QSettings("xyz.fontra", "FontraPak")
