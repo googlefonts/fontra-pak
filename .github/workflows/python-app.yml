@@ -17,6 +17,21 @@ jobs:
         python-version: ["3.10"]
 
     steps:
+
+    - name: macOS Notarize -- Install Certificates
+      if: runner.os == 'macOS'
+      run: |
+        echo ${{ secrets.CERTIFICATE_P12 }} | base64 --decode > certificate.p12
+        security import certificate.p12 -P ${{ secrets.CERTIFICATE_PASSWORD }}
+        security create-keychain -p fgKeychain fg.keychain
+        security default-keychain -s fg.keychain
+        security set-keychain-settings -l -u -t 8000
+        security unlock-keychain -p fgKeychain fg.keychain
+        security import certificate.p12 -k fg.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k fgKeychain fg.keychain
+        rm -fr *.p12
+        # security find-identity -v -p codesigning
+
     - uses: actions/checkout@v2
 
     - name: Set up Python ${{ matrix.python-version }}
@@ -33,11 +48,19 @@ jobs:
       run: |
         pyinstaller FontraPak.spec -y
 
-    - name: Create Mac .app.zip
+    - name: macOS Notarize -- Codesign and Notarize
       if: runner.os == 'macOS'
       run: |
-        cd dist
-        zip -r -q -y FontraPack.app.zip "Fontra Pak.app"
+        macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" dist/Fontra\ Pak.app macos/entitlements.xml
+        python macos/build_dmg.py "dist/Fontra\ Pak.app" "dist/Fontra\ Pak.dmg"
+        codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/Fontra\ Pak.dmg"
+        xcrun altool --notarize-app --primary-bundle-id "xyz.fontra.fontra-pak" \
+                     --username "${{ secrets.NOTARIZE_DEVELOPER }}" \
+                     --password "${{ secrets.NOTARIZE_PASSWORD }}" \
+                     --file dist/Fontra\ Pak.dmg \
+                     --output-format xml \
+                     | python macos/await_notarization.py "${{ secrets.NOTARIZE_DEVELOPER }}" "${{ secrets.NOTARIZE_PASSWORD }}"
+        xcrun stapler staple dist/Fontra\ Pak.dmg
 
     - name: Storing Windows Artifacts
       if: runner.os == 'Windows'
@@ -51,4 +74,4 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: Fontra Pak macOS
-        path: ./dist/*.zip
+        path: ./dist/*.dmg
