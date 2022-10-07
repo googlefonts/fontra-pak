@@ -51,16 +51,16 @@ jobs:
     - name: macOS Notarize -- Codesign and Notarize
       if: runner.os == 'macOS'
       run: |
-        macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" dist/Fontra\ Pak.app macos/entitlements.xml
-        python macos/build_dmg.py "dist/Fontra\ Pak.app" "dist/Fontra\ Pak.dmg"
-        codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/Fontra\ Pak.dmg"
+        macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" "dist/Fontra Pak.app" macos/entitlements.xml
+        python macos/build_dmg.py "dist/Fontra Pak.app" "dist/FontraPak.dmg"
+        codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/FontraPak.dmg"
         xcrun altool --notarize-app --primary-bundle-id "xyz.fontra.fontra-pak" \
                      --username "${{ secrets.NOTARIZE_DEVELOPER }}" \
                      --password "${{ secrets.NOTARIZE_PASSWORD }}" \
-                     --file dist/Fontra\ Pak.dmg \
+                     --file dist/FontraPak.dmg \
                      --output-format xml \
                      | python macos/await_notarization.py "${{ secrets.NOTARIZE_DEVELOPER }}" "${{ secrets.NOTARIZE_PASSWORD }}"
-        xcrun stapler staple dist/Fontra\ Pak.dmg
+        xcrun stapler staple "dist/FontraPak.dmg"
 
     - name: Storing Windows Artifacts
       if: runner.os == 'Windows'
