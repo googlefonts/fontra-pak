@@ -6,13 +6,14 @@ import socket
 import sys
 
 from aiohttp import web
-from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QMainWindow, QLabel, QSizePolicy, QVBoxLayout, QWidget
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, QSize, QPoint, QSettings
 import qasync
 from qasync import asyncClose, QApplication
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from fontra.core.server import FontraServer
+from fontra import __version__ as fontraVersion
 
 
 neutralCSS = """
@@ -47,12 +48,13 @@ class FontraMainWidget(QMainWindow):
 
         self.label = QLabel("Drop font files here")
         self.label.setFont(QFont("Helvetica", 40))
-        self.label.setGeometry(20, 20, 680, 440)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setStyleSheet(neutralCSS)
+        self.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         layout = QVBoxLayout()
         layout.addWidget(self.label)
+        layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
 
         widget = QWidget()
         widget.setLayout(layout)
