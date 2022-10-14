@@ -33,10 +33,10 @@ jobs:
         rm -fr *.p12
         # security find-identity -v -p codesigning
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -65,14 +65,14 @@ jobs:
 
     - name: Storing Windows Artifacts
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v3
       with:
         name: Fontra Pak Windows
         path: ./dist/*.exe
 
     - name: Storing macOS Artifacts
       if: runner.os == 'macOS'
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v3
       with:
         name: Fontra Pak macOS
         path: ./dist/*.dmg
