@@ -136,6 +136,13 @@ async def main():
     site = web.TCPSite(runner, "localhost", port)
     await site.start()
 
+    if "test-startup" in sys.argv:
+        def delayed_quit():
+            print("test-startup")
+            loop.stop()
+
+        loop.call_later(5, delayed_quit)
+
     mainWindow = FontraMainWidget(port, runner.cleanup)
     mainWindow.show()
 
