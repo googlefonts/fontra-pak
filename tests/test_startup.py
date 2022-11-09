@@ -18,7 +18,7 @@ def test_startup():
     result = subprocess.run(
         [app_path, "test-startup"],
         capture_output=True,
-        timeout=15,
+        timeout=30,
         check=True,
         encoding="utf-8",
     )
