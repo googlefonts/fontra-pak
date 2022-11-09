@@ -20,8 +20,8 @@ def test_startup():
         [app_path, "test-startup"],
         capture_output=True,
         timeout=30,
-        check=True,
+        check=False,
         encoding="utf-8",
     )
-    assert "test-startup\n" == result.stdout
     assert "" == result.stderr
+    assert "test-startup\n" == result.stdout
