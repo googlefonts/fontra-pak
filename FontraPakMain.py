@@ -141,7 +141,7 @@ async def main():
             print("test-startup")
             loop.stop()
 
-        loop.call_later(1, delayed_quit)
+        loop.call_later(5, delayed_quit)
 
     mainWindow = FontraMainWidget(port, runner.cleanup)
     mainWindow.show()
