@@ -12,8 +12,8 @@ def test_startup():
             repoRoot / "dist" / "Fontra Pak.app" / "Contents" / "MacOS" / "Fontra Pak"
         )
     elif sys.platform == "win32":
-        return
-        # app_path = repoRoot / "dist" / "Fontra Pak.exe"
+        app_path = repoRoot / "dist" / "Fontra Pak.exe"
+        return  # FIXME: This currently does not work on Windows
     else:
         return
     result = subprocess.run(
