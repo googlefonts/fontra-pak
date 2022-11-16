@@ -18,6 +18,7 @@ from fontra import __version__ as fontraVersion
 
 neutralCSS = """
 background-color: white;
+color: black;
 border: 5px solid lightgray;
 border-radius: 20px;
 border-style: dashed
@@ -25,6 +26,7 @@ border-style: dashed
 
 droppingCSS = """
 background-color: white;
+color: black;
 border: 5px solid gray;
 border-radius: 20px;
 border-style: dashed
