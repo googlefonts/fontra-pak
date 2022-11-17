@@ -17,16 +17,14 @@ from fontra import __version__ as fontraVersion
 
 
 neutralCSS = """
-background-color: white;
-color: black;
+background-color: rgba(255,255,255,128);
 border: 5px solid lightgray;
 border-radius: 20px;
 border-style: dashed
 """
 
 droppingCSS = """
-background-color: white;
-color: black;
+background-color: rgba(255,255,255,64);
 border: 5px solid gray;
 border-radius: 20px;
 border-style: dashed
