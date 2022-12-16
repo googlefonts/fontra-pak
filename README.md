@@ -16,4 +16,4 @@ To build, set up a Python 3.10 (or higher) virtual environment, install the requ
 
 Easy!
 
-https://user-images.githubusercontent.com/4246121/208168145-79a69bc9-194c-4e5d-b3d6-88e52f53b48a.mov
+https://user-images.githubusercontent.com/4246121/208168626-1396ae39-40da-431a-9f10-62aa83885143.mov
