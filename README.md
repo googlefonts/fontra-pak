@@ -1,6 +1,6 @@
 # fontra-pak
 
-A cross-platform bundled [Fontra](https://github.com/BlackFoundryCom/fontra) server for local desktop use
+Fontra Pak is a cross-platform, standalone, bundled [Fontra](https://github.com/BlackFoundryCom/fontra) application for local desktop use.
 
 ## Download
 
