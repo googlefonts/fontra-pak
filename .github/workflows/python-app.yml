@@ -84,6 +84,7 @@ jobs:
     - name: macOS Notarize -- Codesign and Notarize
       if: runner.os == 'macOS'
       run: |
+        source venv/bin/activate
         macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" "dist/Fontra Pak.app" macos/entitlements.plist
         python macos/build_dmg.py "dist/Fontra Pak.app" "dist/FontraPak.dmg"
         codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/FontraPak.dmg"
