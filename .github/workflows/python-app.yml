@@ -11,19 +11,14 @@ on:
   #   branches: [ main ]
 
 jobs:
-  build:
 
-    runs-on: ${{ matrix.os }}
+  build-macos-app:
 
-    strategy:
-      matrix:
-        os: [windows-latest, macOS-latest]
-        python-version: ["3.10"]
+    runs-on: macOS-latest
 
     steps:
 
     - name: macOS Notarize -- Install Certificates
-      if: runner.os == 'macOS'
       run: |
         echo ${{ secrets.CERTIFICATE_P12 }} | base64 --decode > certificate.p12
         security import certificate.p12 -P ${{ secrets.CERTIFICATE_PASSWORD }}
@@ -36,33 +31,44 @@ jobs:
         rm -fr *.p12
         # security find-identity -v -p codesigning
 
-    - uses: actions/checkout@v3
+    - name: Git checkout
+      uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+    - name: Set up Python 3.10 for macOS
+      # We use Python from python.org instead of from actions/setup-python, as the app
+      # built with the latter does not work on macOS 10.15
+      run: |
+        curl https://www.python.org/ftp/python/3.10.9/python-3.10.9-macos11.pkg --output python-installer.pkg
+        sudo installer -pkg python-installer.pkg -target /
+        python3 --version
+        python3 -c "import platform; print('macOS version:', platform.mac_ver()[0])"
+
+    - name: Setup Virtual Environment
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        python -c "import sys; print('\n'.join(sys.path))"
 
     - name: Install dependencies
       run: |
+        source venv/bin/activate
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
 
     - name: Build app
       run: |
+        source venv/bin/activate
         pyinstaller FontraPak.spec -y
-
-    - name: Install pytest
-      run: |
-        pip install pytest
 
     - name: Run tests
       run: |
+        source venv/bin/activate
         pytest
 
     - name: macOS Notarize -- Codesign and Notarize
-      if: runner.os == 'macOS'
       run: |
+        source venv/bin/activate
         macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" "dist/Fontra Pak.app" macos/entitlements.plist
         python macos/build_dmg.py "dist/Fontra Pak.app" "dist/FontraPak.dmg"
         codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/FontraPak.dmg"
@@ -74,16 +80,43 @@ jobs:
                      | python macos/await_notarization.py "${{ secrets.NOTARIZE_DEVELOPER }}" "${{ secrets.NOTARIZE_PASSWORD }}"
         xcrun stapler staple "dist/FontraPak.dmg"
 
-    - name: Storing Windows Artifacts
-      if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v3
-      with:
-        name: Fontra Pak Windows
-        path: ./dist/*.exe
-
     - name: Storing macOS Artifacts
-      if: runner.os == 'macOS'
       uses: actions/upload-artifact@v3
       with:
         name: Fontra Pak macOS
         path: ./dist/*.dmg
+
+
+  build-windows-exe:
+
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Git checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+
+    - name: Build exe
+      run: |
+        pyinstaller FontraPak.spec -y
+
+    - name: Run tests
+      run: |
+        pytest
+
+    - name: Storing Windows Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Fontra Pak Windows
+        path: ./dist/*.exe
