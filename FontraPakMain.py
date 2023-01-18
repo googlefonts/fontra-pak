@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import logging
 from urllib.parse import quote
 import webbrowser
 import socket
@@ -153,6 +154,11 @@ async def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        format="%(asctime)s %(name)-17s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     try:
         qasync.run(main())
     except asyncio.exceptions.CancelledError:
