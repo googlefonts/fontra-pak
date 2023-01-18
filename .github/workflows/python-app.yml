@@ -36,9 +36,26 @@ jobs:
         rm -fr *.p12
         # security find-identity -v -p codesigning
 
-    - uses: actions/checkout@v3
+    - name: Git checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10 for macOS
+      if: runner.os == 'macOS'
+      run: |
+        curl https://www.python.org/ftp/python/3.10.9/python-3.10.9-macos11.pkg --output python-installer.pkg
+        sudo installer -pkg python-installer.pkg -target /
+        python3 --version
+        python3 -c "import platform; print('macOS version:', platform.mac_ver()[0])"
+
+    - name: Setup Virtual Environment
+      if: runner.os == 'macOS'
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        python -c "import sys; print('\n'.join(sys.path))"
 
     - name: Set up Python ${{ matrix.python-version }}
+      if: runner.os != 'macOS'
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
