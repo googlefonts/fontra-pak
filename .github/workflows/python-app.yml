@@ -14,8 +14,6 @@ jobs:
 
   build-macos-app:
 
-    if: runner.os == 'macOS'
-
     runs-on: macOS-latest
 
     steps:
@@ -90,8 +88,6 @@ jobs:
 
 
   build-windows-exe:
-
-    if: runner.os == 'Windows'
 
     runs-on: windows-latest
 
