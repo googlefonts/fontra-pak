@@ -51,7 +51,9 @@ class FontraMainWidget(QMainWindow):
         self.label.setFont(QFont("Helvetica", 40))
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setStyleSheet(neutralCSS)
-        self.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.label.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
 
         layout = QVBoxLayout()
         layout.addWidget(self.label)
@@ -138,6 +140,7 @@ async def main():
     await site.start()
 
     if "test-startup" in sys.argv:
+
         def delayed_quit():
             print("test-startup")
             loop.stop()
