@@ -4,7 +4,7 @@ import sys
 
 
 def printNotarizeLog(submissionID, appleID, teamID, password):
-    infoCommand = [
+    logCommand = [
         "xcrun",
         "notarytool",
         "log",
@@ -15,7 +15,7 @@ def printNotarizeLog(submissionID, appleID, teamID, password):
     ]
     try:
         result = subprocess.run(
-            infoCommand, check=True, capture_output=True, encoding="ascii"
+            logCommand, check=True, capture_output=True, encoding="ascii"
         )
     except subprocess.CalledProcessError as error:
         print("STDOUT", error.stdout)
