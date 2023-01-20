@@ -16,11 +16,14 @@ def printNotarizeLog(submissionID, appleID, teamID, password):
         submissionID,
     ]
     try:
-        result = subprocess.run(infoCommand, check=True, capture_output=True)
+        result = subprocess.run(
+            infoCommand, check=True, capture_output=True, encoding="ascii"
+        )
     except subprocess.CalledProcessError as error:
         print("STDOUT", error.stdout)
         print("STDERR", error.stderr)
         raise
+    print(result.stdout)
 
 
 notarizeResult = json.loads(sys.stdin.read().encode("ascii"))
