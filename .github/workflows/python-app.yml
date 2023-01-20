@@ -68,11 +68,14 @@ jobs:
 
     - name: macOS Notarize -- Codesign and Notarize
       run: |
-        source venv/bin/activate
-        macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" "dist/Fontra Pak.app" macos/entitlements.plist
-        python macos/build_dmg.py "dist/Fontra Pak.app" "dist/FontraPak.dmg"
+        APP_PATH="dist/Fontra Pak.app"
+        DMG_PATH="dist/FontraPak.dmg"
 
-        codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/FontraPak.dmg"
+        source venv/bin/activate
+        macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" "$APP_PATH" macos/entitlements.plist
+        python macos/build_dmg.py "$APP_PATH" "$DMG_PATH"
+
+        codesign --sign "${{ secrets.CODESIGN_NAME }}" "$DMG_PATH"
 
         echo "Run notarytool..."
 
@@ -82,13 +85,13 @@ jobs:
           --password "${{ secrets.NOTARIZE_PASSWORD }}" \
           --output-format json \
           --wait \
-          dist/FontraPak.dmg \
+          $DMG_PATH \
           | python macos/print_notarize_log.py \
             "${{ secrets.NOTARIZE_DEVELOPER }}" \
             "${{ secrets.NOTARIZE_TEAM_ID }}" \
             "${{ secrets.NOTARIZE_PASSWORD }}"
 
-        xcrun stapler staple "dist/FontraPak.dmg"
+        xcrun stapler staple "$DMG_PATH"
 
     - name: Storing macOS Artifacts
       uses: actions/upload-artifact@v3
