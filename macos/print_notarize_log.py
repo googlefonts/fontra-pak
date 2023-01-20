@@ -13,7 +13,7 @@ def printNotarizeLog(submissionID, appleID, teamID, password):
         "--apple-id", appleID,
         "--password", password,
         "--team-id", teamID,
-        requestUUID,
+        submissionID,
     ]
     try:
         result = subprocess.run(infoCommand, check=True, capture_output=True)
