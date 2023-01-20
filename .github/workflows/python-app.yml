@@ -31,6 +31,13 @@ jobs:
         rm -fr *.p12
         # security find-identity -v -p codesigning
 
+    - name: notarytool help
+      run: |
+        xcrun notarytool --help
+        echo "Failing this step on purpose"
+        exit 1
+
+
     - name: Git checkout
       uses: actions/checkout@v3
 
