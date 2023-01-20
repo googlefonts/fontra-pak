@@ -31,21 +31,6 @@ jobs:
         rm -fr *.p12
         # security find-identity -v -p codesigning
 
-    - name: notarytool help
-      run: |
-        echo "notarytool main help"
-        xcrun notarytool --help
-        echo "notarytool submit help"
-        xcrun notarytool submit --help
-        echo "notarytool infp help"
-        xcrun notarytool info --help
-        echo "notarytool wait help"
-        xcrun notarytool wait --help
-        echo "notarytool log help"
-        xcrun notarytool log --help
-        # echo "Failing this step on purpose"
-        # exit 1
-
     - name: Git checkout
       uses: actions/checkout@v3
 
@@ -112,36 +97,36 @@ jobs:
         path: ./dist/*.dmg
 
 
-  # build-windows-exe:
+  build-windows-exe:
 
-  #   runs-on: windows-latest
+    runs-on: windows-latest
 
-  #   steps:
+    steps:
 
-  #   - name: Git checkout
-  #     uses: actions/checkout@v3
+    - name: Git checkout
+      uses: actions/checkout@v3
 
-  #   - name: Set up Python 3.10
-  #     uses: actions/setup-python@v4
-  #     with:
-  #       python-version: "3.10"
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install --upgrade pip
-  #       pip install -r requirements.txt
-  #       pip install pytest
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
 
-  #   - name: Build exe
-  #     run: |
-  #       pyinstaller FontraPak.spec -y
+    - name: Build exe
+      run: |
+        pyinstaller FontraPak.spec -y
 
-  #   - name: Run tests
-  #     run: |
-  #       pytest
+    - name: Run tests
+      run: |
+        pytest
 
-  #   - name: Storing Windows Artifacts
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: Fontra Pak Windows
-  #       path: ./dist/*.exe
+    - name: Storing Windows Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Fontra Pak Windows
+        path: ./dist/*.exe
