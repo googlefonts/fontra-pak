@@ -82,8 +82,8 @@ jobs:
           --password "${{ secrets.NOTARIZE_PASSWORD }}" \
           --output-format json \
           --wait \
-          dist/FontraPak.dmg | \
-          python macos/print_notarize_log.py \
+          dist/FontraPak.dmg \
+          | python macos/print_notarize_log.py \
             "${{ secrets.NOTARIZE_DEVELOPER }}" \
             "${{ secrets.NOTARIZE_TEAM_ID }}" \
             "${{ secrets.NOTARIZE_PASSWORD }}"
