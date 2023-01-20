@@ -43,9 +43,8 @@ jobs:
         xcrun notarytool wait --help
         echo "notarytool log help"
         xcrun notarytool log --help
-        echo "Failing this step on purpose"
-        exit 1
-
+        # echo "Failing this step on purpose"
+        # exit 1
 
     - name: Git checkout
       uses: actions/checkout@v3
@@ -88,12 +87,18 @@ jobs:
         macos/codesign_app.sh "${{ secrets.CODESIGN_NAME }}" "dist/Fontra Pak.app" macos/entitlements.plist
         python macos/build_dmg.py "dist/Fontra Pak.app" "dist/FontraPak.dmg"
         codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/FontraPak.dmg"
-        xcrun altool --notarize-app --primary-bundle-id "xyz.fontra.fontra-pak" \
-                     --username "${{ secrets.NOTARIZE_DEVELOPER }}" \
-                     --password "${{ secrets.NOTARIZE_PASSWORD }}" \
-                     --file dist/FontraPak.dmg \
-                     --output-format xml \
-                     | python macos/await_notarization.py "${{ secrets.NOTARIZE_DEVELOPER }}" "${{ secrets.NOTARIZE_PASSWORD }}"
+        xcrun notarytool submit \
+          --apple-id "${{ secrets.NOTARIZE_DEVELOPER }}" \
+          --password "${{ secrets.NOTARIZE_PASSWORD }}" \
+          --output-format json \
+          --wait \
+          dist/FontraPak.dmg
+        # xcrun altool --notarize-app --primary-bundle-id "xyz.fontra.fontra-pak" \
+        #              --username "${{ secrets.NOTARIZE_DEVELOPER }}" \
+        #              --password "${{ secrets.NOTARIZE_PASSWORD }}" \
+        #              --file dist/FontraPak.dmg \
+        #              --output-format xml \
+        #              | python macos/await_notarization.py "${{ secrets.NOTARIZE_DEVELOPER }}" "${{ secrets.NOTARIZE_PASSWORD }}"
         xcrun stapler staple "dist/FontraPak.dmg"
 
     - name: Storing macOS Artifacts
