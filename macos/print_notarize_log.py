@@ -1,8 +1,6 @@
-import os
 import json
 import subprocess
 import sys
-import time
 
 
 def printNotarizeLog(submissionID, appleID, teamID, password):
