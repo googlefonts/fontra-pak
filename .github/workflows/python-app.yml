@@ -89,6 +89,7 @@ jobs:
         codesign --sign "${{ secrets.CODESIGN_NAME }}" "dist/FontraPak.dmg"
         xcrun notarytool submit \
           --apple-id "${{ secrets.NOTARIZE_DEVELOPER }}" \
+          --team-id "${{ secrets.NOTARIZE_TEAM_ID }}" \
           --password "${{ secrets.NOTARIZE_PASSWORD }}" \
           --output-format json \
           --wait \
