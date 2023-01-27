@@ -1,4 +1,4 @@
-git+https://github.com/BlackFoundryCom/fontra.git
+git+https://github.com/googlefonts/fontra.git
 git+https://github.com/BlackFoundryCom/fontra-rcjk.git
 aiohttp==3.8.3
 pyinstaller==5.4.1
