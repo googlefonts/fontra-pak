@@ -1,10 +1,10 @@
 # Fontra Pak
 
-Fontra Pak is a cross-platform, standalone, bundled [Fontra](https://github.com/BlackFoundryCom/fontra) application for desktop use.
+Fontra Pak is a cross-platform, standalone, bundled [Fontra](https://github.com/googlefonts/fontra) application for desktop use.
 
 ## Download
 
-Nightly builds can be downloaded from the topmost [“Build Application”](https://github.com/BlackFoundryCom/fontra-pak/actions) workflow.
+Nightly builds can be downloaded from the topmost [“Build Application”](https://github.com/googlefonts/fontra-pak/actions) workflow.
 
 ## Build locally
 
