@@ -3,6 +3,7 @@ import functools
 import logging
 from urllib.parse import quote
 import webbrowser
+import secrets
 import socket
 import sys
 
@@ -131,6 +132,7 @@ async def main():
         host="localhost",
         httpPort=port,
         projectManager=manager,
+        versionToken=secrets.token_hex(4),
     )
     server.setup()
 
