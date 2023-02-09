@@ -1,7 +1,6 @@
 import pathlib
-import sys
 import subprocess
-
+import sys
 
 repoRoot = pathlib.Path(__file__).resolve().parent.parent
 

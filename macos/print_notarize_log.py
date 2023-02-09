@@ -8,9 +8,12 @@ def printNotarizeLog(submissionID, appleID, teamID, password):
         "xcrun",
         "notarytool",
         "log",
-        "--apple-id", appleID,
-        "--password", password,
-        "--team-id", teamID,
+        "--apple-id",
+        appleID,
+        "--password",
+        password,
+        "--team-id",
+        teamID,
         submissionID,
     ]
     try:

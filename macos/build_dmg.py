@@ -3,7 +3,6 @@ import subprocess
 import sys
 import tempfile
 
-
 appPath = os.path.abspath(sys.argv[1])
 appFileName = os.path.basename(appPath)
 appName, _ = os.path.splitext(appFileName)
@@ -24,20 +23,34 @@ with tempfile.TemporaryDirectory() as imgPath:
         tmpImagePath = tempfile.mktemp(suffix=".dmg")
         try:
             createCommand = [
-                "hdiutil", "create", "-fs", "HFS+",
-                "-size", "200m",
-                "-srcfolder", imgPath,
-                "-volname", appName,
-                "-format", "UDZO",
+                "hdiutil",
+                "create",
+                "-fs",
+                "HFS+",
+                "-size",
+                "200m",
+                "-srcfolder",
+                imgPath,
+                "-volname",
+                appName,
+                "-format",
+                "UDZO",
                 "-quiet",
                 tmpImagePath,
             ]
             subprocess.run(createCommand, check=True)
 
             convertCommand = [
-                "hdiutil", "convert", "-format", "UDZO", "-imagekey", "zlib-level=9",
+                "hdiutil",
+                "convert",
+                "-format",
+                "UDZO",
+                "-imagekey",
+                "zlib-level=9",
                 "-quiet",
-                "-o", dmgPath, tmpImagePath,
+                "-o",
+                dmgPath,
+                tmpImagePath,
             ]
             subprocess.run(convertCommand, check=True)
         finally:
