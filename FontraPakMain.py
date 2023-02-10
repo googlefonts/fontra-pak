@@ -1,22 +1,21 @@
 import asyncio
 import functools
 import logging
-from urllib.parse import quote
-import webbrowser
 import secrets
 import socket
 import sys
+import webbrowser
+from urllib.parse import quote
 
-from aiohttp import web
-from PyQt6.QtWidgets import QMainWindow, QLabel, QSizePolicy, QVBoxLayout, QWidget
-from PyQt6.QtGui import QFont
-from PyQt6.QtCore import Qt, QSize, QPoint, QSettings
 import qasync
-from qasync import asyncClose, QApplication
-from fontra.filesystem.projectmanager import FileSystemProjectManager
-from fontra.core.server import FontraServer
+from aiohttp import web
 from fontra import __version__ as fontraVersion
-
+from fontra.core.server import FontraServer
+from fontra.filesystem.projectmanager import FileSystemProjectManager
+from PyQt6.QtCore import QPoint, QSettings, QSize, Qt
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import QLabel, QMainWindow, QSizePolicy, QVBoxLayout, QWidget
+from qasync import QApplication, asyncClose
 
 neutralCSS = """
 background-color: rgba(255,255,255,128);
