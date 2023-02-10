@@ -59,6 +59,7 @@ jobs:
 
     - name: Run pre-commit
       run: |
+        source venv/bin/activate
         pre-commit run --all-files --verbose --show-diff-on-failure
 
     - name: Build app
