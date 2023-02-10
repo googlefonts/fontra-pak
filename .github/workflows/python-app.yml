@@ -125,10 +125,6 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
 
-    - name: Run pre-commit
-      run: |
-        pre-commit run --all-files --verbose --show-diff-on-failure
-
     - name: Build exe
       run: |
         pyinstaller FontraPak.spec -y
