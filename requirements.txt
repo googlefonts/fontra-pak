@@ -1,6 +1,6 @@
 git+https://github.com/googlefonts/fontra.git
 git+https://github.com/googlefonts/fontra-rcjk.git
-aiohttp==3.8.3
+aiohttp==3.8.4
 pyinstaller==5.7.0
 PyQt6==6.4.2
 qasync==0.23.0
