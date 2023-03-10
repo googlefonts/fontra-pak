@@ -31,6 +31,12 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "19.x"
+          cache: "npm"
+
       - name: Set up Python 3.10 for macOS
         # We use Python from python.org instead of from actions/setup-python, as the app
         # built with the latter does not work on macOS 10.15
@@ -107,6 +113,12 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "19.x"
+          cache: "npm"
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
