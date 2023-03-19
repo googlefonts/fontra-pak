@@ -1,22 +1,27 @@
-import asyncio
-import functools
 import logging
+import multiprocessing
+import os
 import pathlib
 import secrets
+import signal
 import socket
 import sys
 import webbrowser
 from urllib.parse import quote
 
-import qasync
-from aiohttp import web
 from fontra import __version__ as fontraVersion
 from fontra.core.server import FontraServer
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QPoint, QSettings, QSize, Qt
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import QLabel, QMainWindow, QSizePolicy, QVBoxLayout, QWidget
-from qasync import QApplication, asyncClose
+from PyQt6.QtWidgets import (
+    QApplication,
+    QLabel,
+    QMainWindow,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 neutralCSS = """
 background-color: rgba(255,255,255,128);
@@ -34,10 +39,9 @@ border-style: dashed
 
 
 class FontraMainWidget(QMainWindow):
-    def __init__(self, port, closeCallback):
+    def __init__(self, port):
         super().__init__()
         self.port = port
-        self.closeCallback = closeCallback
         self.setWindowTitle("Fontra Pak")
         self.resize(720, 480)
 
@@ -92,13 +96,6 @@ class FontraMainWidget(QMainWindow):
             )
         event.acceptProposedAction()
 
-    @asyncClose
-    async def closeEvent(self, event):
-        # Write window size and position to config file
-        self.settings.setValue("size", self.size())
-        self.settings.setValue("pos", self.pos())
-        await self.closeCallback()
-
 
 def getFreeTCPPort(startPort=8000):
     port = startPort
@@ -117,22 +114,12 @@ def getFreeTCPPort(startPort=8000):
     return port
 
 
-async def main():
-    def close_future(future, loop):
-        # loop.call_later(10, future.cancel)
-        future.cancel()
-
-    loop = asyncio.get_event_loop()
-    future = asyncio.Future()
-
-    app = QApplication.instance()
-    if hasattr(app, "aboutToQuit"):
-        getattr(app, "aboutToQuit").connect(
-            functools.partial(close_future, future, loop)
-        )
-
-    port = getFreeTCPPort()
-
+def runFontraServer(port):
+    logging.basicConfig(
+        format="%(asctime)s %(name)-17s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     manager = FileSystemProjectManager(None)
     server = FontraServer(
         host="localhost",
@@ -141,36 +128,23 @@ async def main():
         versionToken=secrets.token_hex(4),
     )
     server.setup()
+    server.run(showLaunchBanner=False)
 
-    runner = web.AppRunner(server.httpApp)
-    await runner.setup()
-    site = web.TCPSite(runner, "localhost", port)
-    await site.start()
 
-    if "test-startup" in sys.argv:
+def main():
+    port = getFreeTCPPort()
+    serverProcess = multiprocessing.Process(target=runFontraServer, args=(port,))
+    serverProcess.start()
 
-        def delayed_quit():
-            print("test-startup")
-            loop.stop()
+    app = QApplication(sys.argv)
 
-        loop.call_later(5, delayed_quit)
-
-    mainWindow = FontraMainWidget(port, runner.cleanup)
+    app.aboutToQuit.connect(lambda: os.kill(serverProcess.pid, signal.SIGINT))
+    mainWindow = FontraMainWidget(port)
     mainWindow.show()
 
-    await future
-    await asyncio.shield(runner.cleanup())
-
-    return True
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        format="%(asctime)s %(name)-17s %(levelname)-8s %(message)s",
-        level=logging.INFO,
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    try:
-        qasync.run(main())
-    except asyncio.exceptions.CancelledError:
-        sys.exit(0)
+    multiprocessing.freeze_support()
+    main()
