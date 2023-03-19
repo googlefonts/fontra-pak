@@ -137,8 +137,8 @@ def main():
     serverProcess.start()
 
     app = QApplication(sys.argv)
-
     app.aboutToQuit.connect(lambda: os.kill(serverProcess.pid, signal.SIGINT))
+
     mainWindow = FontraMainWidget(port)
     mainWindow.show()
 
