@@ -120,7 +120,8 @@ def getFreeTCPPort(startPort=8000):
 async def main():
     def close_future(future, loop):
         # loop.call_later(10, future.cancel)
-        future.cancel()
+        if not future.done():
+            future.set_result(None)
 
     loop = asyncio.get_event_loop()
     future = asyncio.Future()
@@ -159,9 +160,8 @@ async def main():
     mainWindow.show()
 
     await future
-    await asyncio.shield(runner.cleanup())
 
-    return True
+    sys.exit(0)
 
 
 if __name__ == "__main__":
