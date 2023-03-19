@@ -1,6 +1,7 @@
 import asyncio
 import functools
 import logging
+import pathlib
 import secrets
 import socket
 import sys
@@ -79,7 +80,13 @@ class FontraMainWidget(QMainWindow):
         self.label.setStyleSheet(neutralCSS)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
-            path = quote(path, safe="")
+            path = pathlib.Path(path)
+            assert path.is_absolute()
+            parts = list(path.parts)
+            if not path.drive:
+                assert parts[0] == "/"
+                del parts[0]
+            path = "/".join(quote(part, safe="") for part in parts)
             webbrowser.open(
                 f"http://localhost:{self.port}/editor/-/{path}?text=%22Hello%22"
             )
