@@ -12,7 +12,7 @@ from urllib.parse import quote
 from fontra import __version__ as fontraVersion
 from fontra.core.server import FontraServer
 from fontra.filesystem.projectmanager import FileSystemProjectManager
-from PyQt6.QtCore import QPoint, QSettings, QSize, Qt
+from PyQt6.QtCore import QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QApplication,
@@ -141,6 +141,14 @@ def main():
 
     mainWindow = FontraMainWidget(port)
     mainWindow.show()
+
+    if "test-startup" in sys.argv:
+
+        def delayedQuit():
+            print("test-startup")
+            app.quit()
+
+        QTimer.singleShot(1000, delayedQuit)
 
     sys.exit(app.exec())
 

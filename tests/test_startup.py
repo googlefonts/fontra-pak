@@ -23,4 +23,4 @@ def test_startup():
         encoding="utf-8",
     )
     assert "" == result.stderr
-    assert "test-startup\n" == result.stdout
+    assert "test-startup" == result.stdout.splitlines()[-1]
