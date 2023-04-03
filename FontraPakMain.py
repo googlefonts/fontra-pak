@@ -148,7 +148,7 @@ def main():
             print("test-startup")
             app.quit()
 
-        QTimer.singleShot(1000, delayedQuit)
+        QTimer.singleShot(1500, delayedQuit)
 
     sys.exit(app.exec())
 
