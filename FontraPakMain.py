@@ -69,6 +69,10 @@ class FontraMainWidget(QMainWindow):
         self.setCentralWidget(widget)
         self.show()
 
+    def closeEvent(self, event):
+        self.settings.setValue("size", self.size())
+        self.settings.setValue("pos", self.pos())
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
