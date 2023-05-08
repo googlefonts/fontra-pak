@@ -68,6 +68,13 @@ if sys.platform == "darwin":
         name='Fontra Pak.app',
         icon='icon/FontraIcon.icns',
         bundle_identifier='xyz.fontra.fontra-pak',
+        info_plist={
+            'CFBundleDocumentTypes': [
+                dict(
+                    CFBundleTypeExtensions=["ttf", "otf", "designspace", "ufo"],
+                ),
+            ],
+        },
     )
 else:
     exe = EXE(

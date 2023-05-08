@@ -12,7 +12,7 @@ from urllib.parse import quote
 from fontra import __version__ as fontraVersion
 from fontra.core.server import FontraServer
 from fontra.filesystem.projectmanager import FileSystemProjectManager
-from PyQt6.QtCore import QPoint, QSettings, QSize, Qt, QTimer
+from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QApplication,
@@ -36,6 +36,21 @@ border: 5px solid gray;
 border-radius: 20px;
 border-style: dashed
 """
+
+
+class FontraApplication(QApplication):
+    def __init__(self, argv, port):
+        self.port = port
+        super().__init__(argv)
+
+    def event(self, event):
+        """Handle macOS FileOpen events."""
+        if event.type() == QEvent.Type.FileOpen:
+            openFile(event.file(), self.port)
+        else:
+            return super().event(event)
+
+        return True
 
 
 class FontraMainWidget(QMainWindow):
@@ -88,17 +103,19 @@ class FontraMainWidget(QMainWindow):
         self.label.setStyleSheet(neutralCSS)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
-            path = pathlib.Path(path).resolve()
-            assert path.is_absolute()
-            parts = list(path.parts)
-            if not path.drive:
-                assert parts[0] == "/"
-                del parts[0]
-            path = "/".join(quote(part, safe="") for part in parts)
-            webbrowser.open(
-                f"http://localhost:{self.port}/editor/-/{path}?text=%22Hello%22"
-            )
+            openFile(path, self.port)
         event.acceptProposedAction()
+
+
+def openFile(path, port):
+    path = pathlib.Path(path).resolve()
+    assert path.is_absolute()
+    parts = list(path.parts)
+    if not path.drive:
+        assert parts[0] == "/"
+        del parts[0]
+    path = "/".join(quote(part, safe="") for part in parts)
+    webbrowser.open(f"http://localhost:{port}/editor/-/{path}?text=%22Hello%22")
 
 
 def getFreeTCPPort(startPort=8000):
@@ -140,7 +157,7 @@ def main():
     serverProcess = multiprocessing.Process(target=runFontraServer, args=(port,))
     serverProcess.start()
 
-    app = QApplication(sys.argv)
+    app = FontraApplication(sys.argv, port)
     app.aboutToQuit.connect(lambda: os.kill(serverProcess.pid, signal.SIGINT))
 
     mainWindow = FontraMainWidget(port)
