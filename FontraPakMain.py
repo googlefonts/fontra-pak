@@ -88,7 +88,7 @@ class FontraMainWidget(QMainWindow):
         self.label.setStyleSheet(neutralCSS)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
-            path = pathlib.Path(path)
+            path = pathlib.Path(path).resolve()
             assert path.is_absolute()
             parts = list(path.parts)
             if not path.drive:
