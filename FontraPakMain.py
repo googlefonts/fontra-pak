@@ -22,23 +22,28 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-neutralCSS = """
-background-color: rgba(255,255,255,128);
-border: 5px solid lightgray;
+commonCSS = """
 border-radius: 20px;
 border-style: dashed;
 font-size: 18px;
 padding: 16px;
 """
 
-droppingCSS = """
+neutralCSS = (
+    """
+background-color: rgba(255,255,255,128);
+border: 5px solid lightgray;
+"""
+    + commonCSS
+)
+
+droppingCSS = (
+    """
 background-color: rgba(255,255,255,64);
 border: 5px solid gray;
-border-radius: 20px;
-border-style: dashed;
-font-size: 18px;
-padding: 16px;
 """
+    + commonCSS
+)
 
 mainText = """
 <span style="font-size: 40px;">Drop font files here</span>
