@@ -13,7 +13,6 @@ from fontra import __version__ as fontraVersion
 from fontra.core.server import FontraServer
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
-from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
@@ -27,14 +26,30 @@ neutralCSS = """
 background-color: rgba(255,255,255,128);
 border: 5px solid lightgray;
 border-radius: 20px;
-border-style: dashed
+border-style: dashed;
+font-size: 18px;
+padding: 16px;
 """
 
 droppingCSS = """
 background-color: rgba(255,255,255,64);
 border: 5px solid gray;
 border-radius: 20px;
-border-style: dashed
+border-style: dashed;
+font-size: 18px;
+padding: 16px;
+"""
+
+mainText = """
+<span style="font-size: 40px;">Drop font files here</span>
+<br>
+<br>
+Your fonts will stay on your computer and will not be uploaded anywhere.
+<br>
+<br>
+Fontra Pak reads and writes .ufo and .designspace
+<br>
+Additionally, it can read (not write) .ttf and .otf
 """
 
 
@@ -67,8 +82,7 @@ class FontraMainWidget(QMainWindow):
 
         self.setAcceptDrops(True)
 
-        self.label = QLabel("Drop font files here")
-        self.label.setFont(QFont("Helvetica", 40))
+        self.label = QLabel(mainText)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setStyleSheet(neutralCSS)
         self.label.setSizePolicy(
