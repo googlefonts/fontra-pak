@@ -72,6 +72,7 @@ if sys.platform == "darwin":
             'CFBundleDocumentTypes': [
                 dict(
                     CFBundleTypeExtensions=["ttf", "otf", "designspace", "ufo"],
+                    CFBundleTypeRole="Editor",
                 ),
             ],
         },
