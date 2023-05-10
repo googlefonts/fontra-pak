@@ -16,4 +16,4 @@ To build, set up a Python 3.10 (or higher) virtual environment, install the requ
 
 Easy!
 
-https://user-images.githubusercontent.com/4246121/208168626-1396ae39-40da-431a-9f10-62aa83885143.mov
+https://github.com/googlefonts/fontra-pak/assets/4246121/a4e8054e-995a-4bcc-ac64-5c8a0ea415aa
