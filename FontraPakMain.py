@@ -10,7 +10,7 @@ import webbrowser
 from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
-from fontra.core.server import FontraServer
+from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
@@ -137,23 +137,6 @@ def openFile(path, port):
     webbrowser.open(f"http://localhost:{port}/editor/-/{path}?text=%22Hello%22")
 
 
-def getFreeTCPPort(startPort=8000):
-    port = startPort
-    while True:
-        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            tcp.bind(("", port))
-        except OSError as e:
-            if e.errno != 48:
-                raise
-            port += 1
-        else:
-            break
-        finally:
-            tcp.close()
-    return port
-
-
 def runFontraServer(port):
     logging.basicConfig(
         format="%(asctime)s %(name)-17s %(levelname)-8s %(message)s",
@@ -172,7 +155,7 @@ def runFontraServer(port):
 
 
 def main():
-    port = getFreeTCPPort()
+    port = findFreeTCPPort()
     serverProcess = multiprocessing.Process(target=runFontraServer, args=(port,))
     serverProcess.start()
 
