@@ -4,7 +4,6 @@ import os
 import pathlib
 import secrets
 import signal
-import socket
 import sys
 import webbrowser
 from urllib.parse import quote
