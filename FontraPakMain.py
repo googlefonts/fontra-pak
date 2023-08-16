@@ -93,6 +93,7 @@ class FontraMainWidget(QMainWindow):
         self.label.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
+        self.label.setWordWrap(True)
 
         layout = QVBoxLayout()
         layout.addWidget(self.label)
