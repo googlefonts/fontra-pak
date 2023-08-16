@@ -53,7 +53,8 @@ Your fonts will stay on your computer and will not be uploaded anywhere.
 <br>
 Fontra Pak reads and writes .ufo and .designspace
 <br>
-Additionally, it can read (not write) .ttf and .otf
+Additionally, it can read (not write) .ttf, .otf, and (with some limitations)
+.glyphs and .glyphspackage
 """
 
 

@@ -6,7 +6,13 @@ datas = []
 binaries = []
 hiddenimports = []
 
-modules_to_collect_all = ["fontra", "fontra_rcjk", "openstep_plist", "glyphsLib.data"]
+modules_to_collect_all = [
+    "fontra",
+    "fontra_rcjk",
+    "fontra_glyphs",
+    "openstep_plist",
+    "glyphsLib.data",
+]
 for module_name in modules_to_collect_all:
     tmp_ret = collect_all(module_name)
     datas += tmp_ret[0]
