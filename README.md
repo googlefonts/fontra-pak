@@ -4,7 +4,7 @@ Fontra Pak is a cross-platform, standalone, bundled [Fontra](https://github.com/
 
 ## Download
 
-Nightly builds can be downloaded from the topmost [“Build Application”](https://github.com/googlefonts/fontra-pak/actions) workflow. Note that you need to be signed in to GitHub to be able to download.
+Nightly builds can be downloaded from the topmost [“Build Application”](https://github.com/googlefonts/fontra-pak/actions) workflow. You need to be signed in to GitHub to be able to download.
 
 ## Build locally
 
