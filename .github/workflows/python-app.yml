@@ -29,7 +29,7 @@ jobs:
           # security find-identity -v -p codesigning
 
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.10 for macOS
         # We use Python from python.org instead of from actions/setup-python, as the app
@@ -106,7 +106,7 @@ jobs:
 
     steps:
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
