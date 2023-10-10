@@ -144,14 +144,10 @@ jobs:
           name: "Fontra Pak macOS"
           path: ./downloaded-artifact
 
-      - name: Debug Artifact
-        run: |
-          ls -l
-          ls -l ./downloaded-artifact
-
-      - name: Unzip Artifact
-        run: |
-          unzip -q "./downloaded-artifact/Fontra Pak macOS.zip" -d ./downloaded-artifact
+      # - name: Debug Artifact
+      #   run: |
+      #     ls -l
+      #     ls -l ./downloaded-artifact
 
       - name: Upload Artifact
         uses: appleboy/scp-action@v0.1.4
@@ -160,7 +156,7 @@ jobs:
           username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
           password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
           port: 22
-          source: "./downloaded-artifact/Fontra Pak macOS.dmg"
+          source: "./downloaded-artifact/FontraPak.dmg"
           target: "/root/fontra-download/public-html/"
 
   upload-windows-exe:
@@ -174,10 +170,15 @@ jobs:
           name: "Fontra Pak Windows"
           path: ./downloaded-artifact
 
-      - name: Debug Artifact
+      # - name: Debug Artifact
+      #   run: |
+      #     ls -l
+      #     ls -l ./downloaded-artifact
+
+      - name: Zip Artifact
         run: |
-          ls -l
-          ls -l ./downloaded-artifact
+          cd ./downloaded-artifact
+          zip -q FontraPak.zip "Fontra Pak.exe"
 
       - name: Upload Artifact
         uses: appleboy/scp-action@v0.1.4
@@ -186,5 +187,5 @@ jobs:
           username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
           password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
           port: 22
-          source: "./downloaded-artifact/Fontra Pak Windows.zip"
+          source: "./downloaded-artifact/FontraPak.zip"
           target: "/root/fontra-download/public-html/"
