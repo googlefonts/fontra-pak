@@ -144,6 +144,11 @@ jobs:
           name: "Fontra Pak macOS"
           path: ./downloaded-artifact
 
+      - name: Debug Artifact
+        run: |
+          ls -l
+          ls -l ./downloaded-artifact
+
       - name: Unzip Artifact
         run: |
           unzip -q "./downloaded-artifact/Fontra Pak macOS.zip" -d ./downloaded-artifact
@@ -168,6 +173,11 @@ jobs:
         with:
           name: "Fontra Pak Windows"
           path: ./downloaded-artifact
+
+      - name: Debug Artifact
+        run: |
+          ls -l
+          ls -l ./downloaded-artifact
 
       - name: Upload Artifact
         uses: appleboy/scp-action@v0.1.4
