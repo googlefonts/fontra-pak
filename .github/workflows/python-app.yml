@@ -144,6 +144,10 @@ jobs:
           name: "Fontra Pak macOS"
           path: ./downloaded-artifacts-macos
 
+      - name: Unzip macOS Artifact
+        run: |
+          unzip -q ./downloaded-artifact-macos/*.zip -d ./downloaded-artifact-macos
+
       - name: Upload macOS Artifact to Remote Host
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -151,7 +155,7 @@ jobs:
           username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
           password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
           port: 22
-          source: "./downloaded-artifacts-macos/Fontra Pak macOS.zip"
+          source: "./downloaded-artifacts-macos/Fontra Pak macOS.dmg"
           target: "/root/fontra-download/public-html/"
 
       - name: Download Windows Artifact
