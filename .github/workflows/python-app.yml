@@ -142,20 +142,30 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "Fontra Pak macOS"
-          path: ./downloaded-artifacts
+          path: ./downloaded-artifacts-macos
 
-      - name: Download Windows Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: "Fontra Pak Windows"
-          path: ./downloaded-artifacts
-
-      - name: Upload Artifacts to Remote Host
+      - name: Upload macOS Artifact to Remote Host
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
           username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
           password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
           port: 22
-          source: ./downloaded-artifacts/*.zip
+          source: "./downloaded-artifacts-macos/Fontra Pak macOS.zip"
+          target: "/root/fontra-download/public-html/"
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: "Fontra Pak Windows"
+          path: ./downloaded-artifacts-windows
+
+      - name: Upload Windows Artifact to Remote Host
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
+          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
+          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
+          port: 22
+          source: "./downloaded-artifacts-windows/Fontra Pak Windows.zip"
           target: "/root/fontra-download/public-html/"
