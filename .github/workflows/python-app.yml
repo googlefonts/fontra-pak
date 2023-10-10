@@ -152,7 +152,7 @@ jobs:
           password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
           port: 22
           source: "./downloaded-artifact/FontraPak.dmg"
-          target: "/root/fontra-download/public-html/"
+          target: "/home/fontra/public-html/"
           debug: true
           overwrite: true
           use_insecure_cipher: true
@@ -181,7 +181,7 @@ jobs:
           password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
           port: 22
           source: "./downloaded-artifact/FontraPak.zip"
-          target: "/root/fontra-download/public-html/"
+          target: "/home/fontra/public-html/"
           debug: true
           overwrite: true
           use_insecure_cipher: true
