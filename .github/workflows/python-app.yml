@@ -144,11 +144,10 @@ jobs:
           path: ./dist/*.exe
 
       - name: Zip Windows Artifacts
-        run: |
-          cp ./dist/*.exe zip_temp/
-          exe_basename=$(basename ./dist/*.exe)
-          zip -r "$exe_basename.zip" zip_temp/
-          rm -rf zip_temp
+        uses: vimtor/action-zip@v1.1
+        with:
+          files: ./dist/Fontra Pak Windows.exe
+          dest: "Fontra Pak Windows.zip"
 
       - name: Upload Windows Artifacts
         uses: appleboy/scp-action@v0.1.4
