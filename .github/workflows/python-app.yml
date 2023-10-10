@@ -144,24 +144,15 @@ jobs:
           name: "Fontra Pak macOS"
           path: ./downloaded-artifact
 
-      # - name: Upload Artifact
-      #   uses: appleboy/scp-action@v0.1.4
-      #   with:
-      #     host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
-      #     username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
-      #     password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-      #     port: 22
-      #     source: "./downloaded-artifact/FontraPak.dmg"
-      #     target: "/root/fontra-download/public-html/"
-
       - name: Upload Artifact
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: appleboy/scp-action@v0.1.4
         with:
-            server: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
-            username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
-            password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-            local_path: "./downloaded-artifact/FontraPak.dmg"
-            remote_path: "/root/fontra-download/public-html/"
+          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
+          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
+          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
+          port: 22
+          source: "./downloaded-artifact/FontraPak.dmg"
+          target: "/root/fontra-download/public-html/"
 
   upload-windows-exe:
     runs-on: ubuntu-latest
@@ -179,21 +170,12 @@ jobs:
           cd ./downloaded-artifact
           zip -q FontraPak.zip "Fontra Pak.exe"
 
-      # - name: Upload Artifact
-      #   uses: appleboy/scp-action@v0.1.4
-      #   with:
-      #     host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
-      #     username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
-      #     password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-      #     port: 22
-      #     source: "./downloaded-artifact/FontraPak.zip"
-      #     target: "/root/fontra-download/public-html/"
-
       - name: Upload Artifact
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: appleboy/scp-action@v0.1.4
         with:
-            server: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
-            username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
-            password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-            local_path: "./downloaded-artifact/FontraPak.zip"
-            remote_path: "/root/fontra-download/public-html/"
+          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
+          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
+          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
+          port: 22
+          source: "./downloaded-artifact/FontraPak.zip"
+          target: "/root/fontra-download/public-html/"
