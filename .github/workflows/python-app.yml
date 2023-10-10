@@ -146,7 +146,7 @@ jobs:
 
       - name: Unzip macOS Artifact
         run: |
-          unzip -q ./downloaded-artifact-macos/*.zip -d ./downloaded-artifact-macos
+          unzip -q "./downloaded-artifact-macos/Fontra Pak macOS.zip" -d ./downloaded-artifact-macos
 
       - name: Upload macOS Artifact to Remote Host
         uses: appleboy/scp-action@v0.1.4
