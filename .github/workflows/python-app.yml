@@ -101,6 +101,17 @@ jobs:
           name: Fontra Pak macOS
           path: ./dist/*.dmg
 
+      - name: Upload macOS Artifacts
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
+          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
+          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
+          port: 22
+          source: "./dist/*.dmg"
+          target: "/root/fontra-download/public-html/"
+        working-directory: ${{ github.workspace }}
+
   build-windows-exe:
     runs-on: windows-latest
 
@@ -132,3 +143,22 @@ jobs:
         with:
           name: Fontra Pak Windows
           path: ./dist/*.exe
+
+      - name: Zip Windows Artifacts
+        run: |
+          cp ./dist/*.exe zip_temp/
+          exe_basename=$(basename ./dist/*.exe)
+          zip -r "$exe_basename.zip" zip_temp/
+          rm -rf zip_temp
+        working-directory: ${{ github.workspace }}
+
+      - name: Upload Windows Artifacts
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
+          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
+          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
+          port: 22
+          source: "./dist/*.zip"
+          target: "/root/fontra-download/public-html/"
+        working-directory: ${{ github.workspace }}
