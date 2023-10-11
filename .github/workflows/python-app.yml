@@ -133,55 +133,33 @@ jobs:
           name: Fontra Pak Windows
           path: ./dist/*.exe
 
-  upload-macos-app:
+  upload-artifacts:
     runs-on: ubuntu-latest
-    needs: [build-macos-app]
+    needs: [build-macos-app, build-windows-exe]
     steps:
 
       - name: Retrieve Artifact
         uses: actions/download-artifact@v2
         with:
-          name: "Fontra Pak macOS"
           path: ./downloaded-artifact
 
-      - name: Upload Artifact
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
-          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
-          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-          port: 22
-          source: "./downloaded-artifact/FontraPak.dmg"
-          target: "/home/fontra/public-html/"
-          strip_components: 2
-          debug: true
-          overwrite: true
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./downloaded-artifact
 
-  upload-windows-exe:
-    runs-on: ubuntu-latest
-    needs: [build-windows-exe]
-    steps:
+      # - name: Zip Artifact
+      #   run: |
+      #     cd ./downloaded-artifact
+      #     zip -q FontraPak.zip "Fontra Pak.exe"
 
-      - name: Retrieve Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: "Fontra Pak Windows"
-          path: ./downloaded-artifact
-
-      - name: Zip Artifact
-        run: |
-          cd ./downloaded-artifact
-          zip -q FontraPak.zip "Fontra Pak.exe"
-
-      - name: Upload Artifact
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
-          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
-          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-          port: 22
-          source: "./downloaded-artifact/FontraPak.zip"
-          target: "/home/fontra/public-html/"
-          strip_components: 2
-          debug: true
-          overwrite: true
+      # - name: Upload Artifact
+      #   uses: appleboy/scp-action@v0.1.4
+      #   with:
+      #     host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
+      #     username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
+      #     password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
+      #     source: "./downloaded-artifact/FontraPak.dmg"
+      #     target: "/home/fontra/public-html/"
+      #     strip_components: 2
+      #     debug: true
+      #     overwrite: true
