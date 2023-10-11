@@ -143,14 +143,14 @@ jobs:
         with:
           path: ./downloaded-artifact
 
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: ./downloaded-artifact
-
       - name: Zip Windows Artifact
         run: |
           cd ./downloaded-artifact/FontraPakWindows
           zip -q FontraPak.zip "Fontra Pak.exe"
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./downloaded-artifact
 
       - name: Upload Artifact
         uses: appleboy/scp-action@v0.1.4
