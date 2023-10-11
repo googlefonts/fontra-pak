@@ -98,7 +98,7 @@ jobs:
       - name: Storing macOS Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Fontra Pak macOS
+          name: FontraPakMacOS
           path: ./dist/*.dmg
 
   build-windows-exe:
@@ -130,7 +130,7 @@ jobs:
       - name: Storing Windows Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Fontra Pak Windows
+          name: FontraPakWindows
           path: ./dist/*.exe
 
   upload-to-download-server:
@@ -147,19 +147,19 @@ jobs:
         run: ls -R
         working-directory: ./downloaded-artifact
 
-      # - name: Zip Artifact
-      #   run: |
-      #     cd ./downloaded-artifact
-      #     zip -q FontraPak.zip "Fontra Pak.exe"
+      - name: Zip Windows Artifact
+        run: |
+          cd ./downloaded-artifact/FontraPakWindows
+          zip -q FontraPak.zip "Fontra Pak.exe"
 
-      # - name: Upload Artifact
-      #   uses: appleboy/scp-action@v0.1.4
-      #   with:
-      #     host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
-      #     username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
-      #     password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-      #     source: "./downloaded-artifact/FontraPak.dmg"
-      #     target: "/home/fontra/public-html/"
-      #     strip_components: 2
-      #     debug: true
-      #     overwrite: true
+      - name: Upload Artifact
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
+          username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
+          password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
+          source: "./downloaded-artifact/FontraPakMacOS/FontraPak.dmg,./downloaded-artifact/FontraPakWindows/FontraPak.zip"
+          target: "/home/fontra/public-html/"
+          strip_components: 3
+          debug: true
+          overwrite: true
