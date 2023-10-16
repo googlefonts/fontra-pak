@@ -7,3 +7,4 @@ pyinstaller==5.13.2
 # we'll stick to these:
 PyQt6==6.4.2
 PyQt6-Qt6==6.4.3
+PyQt6-sip==13.5.0  # 13.6.0 works, but issues a DeprecationWarning that makes our test fail
