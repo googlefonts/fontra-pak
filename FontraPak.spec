@@ -24,7 +24,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['FontraPakMain.py'],
+    ["FontraPakMain.py"],
     pathex=[],
     binaries=binaries,
     datas=datas,
@@ -46,7 +46,7 @@ if sys.platform == "darwin":
         a.scripts,
         [],
         exclude_binaries=True,
-        name='Fontra Pak',
+        name="Fontra Pak",
         debug=False,
         bootloader_ignore_signals=False,
         strip=False,
@@ -57,7 +57,7 @@ if sys.platform == "darwin":
         target_arch=None,
         codesign_identity=None,
         entitlements_file=None,
-        icon='icon/FontraIcon.ico',
+        icon="icon/FontraIcon.ico",
     )
     coll = COLLECT(
         exe,
@@ -67,15 +67,15 @@ if sys.platform == "darwin":
         strip=False,
         upx=True,
         upx_exclude=[],
-        name='Fontra Pak',
+        name="Fontra Pak",
     )
     app = BUNDLE(
         coll,
-        name='Fontra Pak.app',
-        icon='icon/FontraIcon.icns',
-        bundle_identifier='xyz.fontra.fontra-pak',
+        name="Fontra Pak.app",
+        icon="icon/FontraIcon.icns",
+        bundle_identifier="xyz.fontra.fontra-pak",
         info_plist={
-            'CFBundleDocumentTypes': [
+            "CFBundleDocumentTypes": [
                 dict(
                     CFBundleTypeExtensions=["ttf", "otf", "designspace", "ufo"],
                     CFBundleTypeRole="Editor",
@@ -91,7 +91,7 @@ else:
         a.zipfiles,
         a.datas,
         [],
-        name='Fontra Pak',
+        name="Fontra Pak",
         debug=False,
         bootloader_ignore_signals=False,
         strip=False,
@@ -104,5 +104,5 @@ else:
         target_arch=None,
         codesign_identity=None,
         entitlements_file=None,
-        icon='icon/FontraIcon.ico',
+        icon="icon/FontraIcon.ico",
     )
