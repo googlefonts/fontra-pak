@@ -136,6 +136,8 @@ jobs:
   upload-to-download-server:
     runs-on: ubuntu-latest
     needs: [build-macos-app, build-windows-exe]
+    if: github.ref == 'refs/heads/main'
+
     steps:
 
       - name: Retrieve Artifact
