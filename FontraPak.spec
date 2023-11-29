@@ -82,6 +82,7 @@ if sys.platform == "darwin":
                         "otf",
                         "designspace",
                         "ufo",
+                        "glyphs",
                         "fontra",
                         "rcjk",
                     ],
