@@ -155,7 +155,7 @@ jobs:
         working-directory: ./downloaded-artifact
 
       - name: Upload Artifact
-        uses: appleboy/scp-action@v0.1.6
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
           username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
