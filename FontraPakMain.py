@@ -106,7 +106,7 @@ class FontraMainWidget(QMainWindow):
         fileMenu = self.menuBar().addMenu("File")
 
         newAction = fileMenu.addAction("New Font...")
-        newAction.triggered.connect(self.new)
+        newAction.triggered.connect(self.newFont)
 
         openMenu = fileMenu.addMenu("Open...")
         openFolderAction = openMenu.addAction("Open .fontra, .ufo or .rcjk ...")
@@ -135,7 +135,7 @@ class FontraMainWidget(QMainWindow):
 
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        button.clicked.connect(self.new)
+        button.clicked.connect(self.newFont)
 
         layout.addWidget(button)
         layout.addWidget(self.label)
@@ -169,7 +169,7 @@ class FontraMainWidget(QMainWindow):
             openFile(path, self.port)
         event.acceptProposedAction()
 
-    def new(self):
+    def newFont(self):
         title = "New Font..."
         fileName = "untitled"
         dialog = QFileDialog.getSaveFileName(
