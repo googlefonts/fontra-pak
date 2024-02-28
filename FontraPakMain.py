@@ -108,14 +108,10 @@ class FontraMainWidget(QMainWindow):
         openMenu = fileMenu.addMenu("Open...")
         openFolderAction = openMenu.addAction("Open .fontra, .ufo or .rcjk ...")
         openFolderAction.triggered.connect(self.openFolder)
-        openFileAction = openMenu.addAction("Open TTF, OTF, Designspace or GlyphsApp...")
+        openFileAction = openMenu.addAction(
+            "Open TTF, OTF, Designspace or GlyphsApp..."
+        )
         openFileAction.triggered.connect(self.openFile)
-
-        """
-        # TODO: implement save as
-        saveAsAction = fileMenu.addAction('Save as...')
-        saveAsAction.triggered.connect(self.saveAs)
-        """
 
         self.settings = QSettings("xyz.fontra", "FontraPak")
 
@@ -183,6 +179,10 @@ class FontraMainWidget(QMainWindow):
         )
 
         projectPath = getFontPath(dialog[0], dialog[1])
+        if not projectPath:
+            # User cancelled
+            return
+
         destBackend = newFileSystemBackend(projectPath)
         destBackend.close()
 
@@ -201,20 +201,6 @@ class FontraMainWidget(QMainWindow):
         projectPath = dialog[0]
         if os.path.exists(projectPath):
             openFile(projectPath, self.port)
-
-    def saveAs(self, title="Save as...", fileName="untitled"):
-        dialog = QFileDialog.getSaveFileName(
-            self,
-            title,
-            "/home/user/" + fileName,
-            "Designspace (*.designspace);;Fontra (*.fontra);;Robo CJK (*.rcjk);;Unified Font Object (*.ufo)",
-        )
-
-        projectPath = getFontPath(dialog[0], dialog[1])
-        if not os.path.exists(projectPath):
-            # if file does not exist, save it
-            # TODO: save current project
-            pass
 
 
 def openFile(path, port):
