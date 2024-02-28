@@ -12,6 +12,7 @@ from fontra import __version__ as fontraVersion
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from fontra.backends import newFileSystemBackend
+from fontra.backends.designspace import DesignspaceBackend
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
@@ -152,6 +153,18 @@ class FontraMainWidget(QMainWindow):
         event.acceptProposedAction()
 
     def new(self):
+        newFileName = 'untitled.designspace'
+        dialog = QFileDialog.getSaveFileName(self, 
+                                             'Save as...', 
+                                             '/home/user/' + newFileName, 
+                                             'Designspace (*.designspace)')
+        projectPath = dialog[0]
+        destBackend = DesignspaceBackend.createFromPath(projectPath)
+        destBackend.close()
+        if os.path.exists(projectPath):
+            openFile(projectPath, self.port)
+
+    def newSave(self):
         newFileName = 'untitled.fontra'
         dialog = QFileDialog.getSaveFileName(self, 
                                              'Save as...', 
