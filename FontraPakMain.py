@@ -11,6 +11,7 @@ from urllib.parse import quote
 from fontra import __version__ as fontraVersion
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.filesystem.projectmanager import FileSystemProjectManager
+from fontra.backends import newFileSystemBackend
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
@@ -85,6 +86,9 @@ class FontraMainWidget(QMainWindow):
 
         fileMenu = self.menuBar().addMenu('File')
 
+        newAction = fileMenu.addAction('New')
+        newAction.triggered.connect(self.new)
+
         openFileAction = fileMenu.addAction('Open File')
         openFileAction.triggered.connect(self.openFile)
 
@@ -93,7 +97,7 @@ class FontraMainWidget(QMainWindow):
 
         saveAction = fileMenu.addAction('Save')
         saveAction.triggered.connect(self.save)
-        
+
         saveAsAction = fileMenu.addAction('Save as...')
         saveAsAction.triggered.connect(self.saveAs)
 
@@ -147,22 +151,32 @@ class FontraMainWidget(QMainWindow):
             openFile(path, self.port)
         event.acceptProposedAction()
 
+    def new(self):
+        newFileName = 'untitled.fontra'
+        dialog = QFileDialog.getSaveFileName(self, 
+                                             'Save as...', 
+                                             '/home/user/' + newFileName, 
+                                             'Fontra (*.fontra)')
+        projectPath = dialog[0]
+        destBackend = newFileSystemBackend(projectPath)
+        destBackend.close()
+        if os.path.exists(projectPath):
+            openFile(projectPath, self.port)
+
     def open(self):
         print("Fontra Pak: open folder")
         #dialog = QFileDialog.getOpenFileName(self, 'Open File')
         #path = dialog[0]
-        path = QFileDialog.getExistingDirectory(self, "Open Fontra Folder", "/home", QFileDialog.Option.ShowDirsOnly)
-        print('path: ', path)
-        if path:
-            openFile(path, self.port)
+        projectPath = QFileDialog.getExistingDirectory(self, "Open Fontra Folder", "/home", QFileDialog.Option.ShowDirsOnly)
+        if os.path.exists(projectPath):
+            openFile(projectPath, self.port)
 
     def openFile(self):
         print("Fontra Pak: open file")
         dialog = QFileDialog.getOpenFileName(self, 'Open File')
-        path = dialog[0]
-        print('path: ', path)
-        if path:
-            openFile(path, self.port)
+        projectPath = dialog[0]
+        if os.path.exists(projectPath):
+            openFile(projectPath, self.port)
 
     def save(self):
         print("Fontra Pak: save")
