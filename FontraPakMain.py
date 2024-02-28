@@ -105,11 +105,11 @@ class FontraMainWidget(QMainWindow):
         newAction = fileMenu.addAction("New Font...")
         newAction.triggered.connect(self.new)
 
-        openFileAction = fileMenu.addAction("Open File...")
-        openFileAction.triggered.connect(self.openFile)
-
-        openFolderAction = fileMenu.addAction("Open Folder...")
+        openMenu = fileMenu.addMenu("Open...")
+        openFolderAction = openMenu.addAction("Open .fontra, .ufo or .rcjk ...")
         openFolderAction.triggered.connect(self.openFolder)
+        openFileAction = openMenu.addAction("Open TTF, OTF, Designspace or GlyphsApp...")
+        openFileAction.triggered.connect(self.openFile)
 
         """
         # TODO: implement save as
@@ -190,8 +190,6 @@ class FontraMainWidget(QMainWindow):
             openFile(projectPath, self.port)
 
     def openFolder(self):
-        # TODO: Open folder will be opsolete
-        # once .fontra folder are rekognized as 'files'.
         projectPath = QFileDialog.getExistingDirectory(
             self, "Open Fontra Folder", "/home/user/", QFileDialog.Option.ShowDirsOnly
         )
