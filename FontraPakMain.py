@@ -193,7 +193,6 @@ class FontraMainWidget(QMainWindow):
             openFile(projectPath, self.port)
 
     def openFile(self):
-        print("Fontra Pak: open file")
         dialog = QFileDialog.getOpenFileName(self, 'Open File')
         projectPath = dialog[0]
         if os.path.exists(projectPath):
