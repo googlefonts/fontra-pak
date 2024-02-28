@@ -19,6 +19,9 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
+    QPushButton,
+    QMenu,
+    QFileDialog
 )
 
 commonCSS = """
@@ -80,6 +83,20 @@ class FontraMainWidget(QMainWindow):
         self.setWindowTitle("Fontra Pak")
         self.resize(720, 480)
 
+        fileMenu = self.menuBar().addMenu('File')
+
+        openFileAction = fileMenu.addAction('Open File')
+        openFileAction.triggered.connect(self.openFile)
+
+        openFolderAction = fileMenu.addAction('Open Folder')
+        openFolderAction.triggered.connect(self.open)
+
+        saveAction = fileMenu.addAction('Save')
+        saveAction.triggered.connect(self.save)
+        
+        saveAsAction = fileMenu.addAction('Save as...')
+        saveAsAction.triggered.connect(self.saveAs)
+
         self.settings = QSettings("xyz.fontra", "FontraPak")
 
         self.resize(self.settings.value("size", QSize(720, 480)))
@@ -98,7 +115,11 @@ class FontraMainWidget(QMainWindow):
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
-
+        '''
+        menu = QMenu(self)
+        button = QPushButton("&File", self).setMenu(menu)
+        layout.addWidget(button)
+        '''
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
@@ -125,6 +146,60 @@ class FontraMainWidget(QMainWindow):
         for path in files:
             openFile(path, self.port)
         event.acceptProposedAction()
+
+    def open(self):
+        print("Fontra Pak: open folder")
+        #dialog = QFileDialog.getOpenFileName(self, 'Open File')
+        #path = dialog[0]
+        path = QFileDialog.getExistingDirectory(self, "Open Fontra Folder", "/home", QFileDialog.Option.ShowDirsOnly)
+        print('path: ', path)
+        if path:
+            openFile(path, self.port)
+
+    def openFile(self):
+        print("Fontra Pak: open file")
+        dialog = QFileDialog.getOpenFileName(self, 'Open File')
+        path = dialog[0]
+        print('path: ', path)
+        if path:
+            openFile(path, self.port)
+
+    def save(self):
+        print("Fontra Pak: save")
+
+    def saveAs(self):
+        print("Fontra Pak: saveAs")
+        '''
+        dialog = QFileDialog.getSaveFileName(self, 
+                                             'Save as...', 
+                                             '/home', 
+                                             'Designspace (*.designspace);;Fontra (*.fontra);;Robo CJK (*.rcjk);;Unified Font Object (*.ufo)', 
+                                             options=QFileDialog.Option.DontUseNativeDialog)
+        '''
+        dialog = QFileDialog.getSaveFileName(self, 
+                                             'Save as...', 
+                                             '/home', 
+                                             'Designspace (*.designspace);;Fontra (*.fontra);;Robo CJK (*.rcjk);;Unified Font Object (*.ufo)')
+        path = dialog[0]
+        fileType = dialog[1]
+        if fileType == 'Designspace (*.designspace)':
+            if not path.endswith('.designspace'):
+                path += '.designspace'
+        elif fileType == 'Fontra (*.fontra)': 
+            if not path.endswith('.fontra'):
+                path += '.fontra'
+        elif fileType == 'Robo CJK (*.rcjk)':
+            if not path.endswith('.rcjk'):
+                path += '.rcjk'
+        elif fileType == 'Unified Font Object (*.ufo)': 
+            if not path.endswith('.ufo'):
+                path += '.ufo'
+
+        print('path: ', path)
+        #file = open( name, 'w' )
+        #text = self.textEdit.toPlainText()
+        #file.write(text)
+        #file.close()
 
 
 def openFile(path, port):
