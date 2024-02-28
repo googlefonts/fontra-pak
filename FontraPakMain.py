@@ -60,6 +60,16 @@ Additionally, it can read (not write) .ttf, .otf, and (with some limitations)
 .glyphs and .glyphspackage
 """
 
+fileTypes = [
+    # name, extension
+    ("Designspace", "designspace"),
+    ("Fontra", "fontra"),
+    ("RoboCJK", "rcjk"),
+    ("Unified Font Object", "ufo"),
+]
+
+fileTypesMapping = {f"{name} (*.{extension})": f".{extension}" for name, extension in fileTypes}
+
 
 class FontraApplication(QApplication):
     def __init__(self, argv, port):
@@ -77,18 +87,9 @@ class FontraApplication(QApplication):
 
 
 def getFontPath(path, fileType):
-    if fileType == "Designspace (*.designspace)":
-        if not path.endswith(".designspace"):
-            path += ".designspace"
-    elif fileType == "Fontra (*.fontra)":
-        if not path.endswith(".fontra"):
-            path += ".fontra"
-    elif fileType == "Robo CJK (*.rcjk)":
-        if not path.endswith(".rcjk"):
-            path += ".rcjk"
-    elif fileType == "Unified Font Object (*.ufo)":
-        if not path.endswith(".ufo"):
-            path += ".ufo"
+    extension = fileTypesMapping.get(fileType)
+    if not path.endswith(extension):
+        path += extension
 
     return path
 
@@ -173,9 +174,7 @@ class FontraMainWidget(QMainWindow):
             self,
             title,
             "/home/user/" + fileName,
-            "Designspace (*.designspace);"
-            ";Fontra (*.fontra);;Robo CJK (*.rcjk);"
-            ";Unified Font Object (*.ufo)",
+            ";;".join(fileTypesMapping),
         )
 
         projectPath = getFontPath(dialog[0], dialog[1])
