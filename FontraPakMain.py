@@ -179,10 +179,11 @@ class FontraMainWidget(QMainWindow):
             ";;".join(fileTypesMapping),
         )
 
-        projectPath = getFontPath(dialog[0], dialog[1])
-        if not projectPath:
+        if not dialog[0] or not dialog[1]:
             # User cancelled
             return
+
+        projectPath = getFontPath(dialog[0], dialog[1])
 
         destBackend = newFileSystemBackend(projectPath)
         destBackend.close()
