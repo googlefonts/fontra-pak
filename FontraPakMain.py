@@ -89,7 +89,7 @@ class FontraApplication(QApplication):
 
 
 def getFontPath(path, fileType):
-    extension = fileTypesMapping.get(fileType)
+    extension = fileTypesMapping[fileType]
     if not path.endswith(extension):
         path += extension
 
