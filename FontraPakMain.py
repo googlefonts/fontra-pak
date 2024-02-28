@@ -9,19 +9,19 @@ import webbrowser
 from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
+from fontra.backends import newFileSystemBackend
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.filesystem.projectmanager import FileSystemProjectManager
-from fontra.backends import newFileSystemBackend
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
+    QFileDialog,
     QLabel,
     QMainWindow,
+    QPushButton,
     QSizePolicy,
     QVBoxLayout,
     QWidget,
-    QPushButton,
-    QFileDialog
 )
 
 commonCSS = """
@@ -77,18 +77,18 @@ class FontraApplication(QApplication):
 
 
 def getFontPath(path, fileType):
-    if fileType == 'Designspace (*.designspace)':
-        if not path.endswith('.designspace'):
-            path += '.designspace'
-    elif fileType == 'Fontra (*.fontra)': 
-        if not path.endswith('.fontra'):
-            path += '.fontra'
-    elif fileType == 'Robo CJK (*.rcjk)':
-        if not path.endswith('.rcjk'):
-            path += '.rcjk'
-    elif fileType == 'Unified Font Object (*.ufo)': 
-        if not path.endswith('.ufo'):
-            path += '.ufo'
+    if fileType == "Designspace (*.designspace)":
+        if not path.endswith(".designspace"):
+            path += ".designspace"
+    elif fileType == "Fontra (*.fontra)":
+        if not path.endswith(".fontra"):
+            path += ".fontra"
+    elif fileType == "Robo CJK (*.rcjk)":
+        if not path.endswith(".rcjk"):
+            path += ".rcjk"
+    elif fileType == "Unified Font Object (*.ufo)":
+        if not path.endswith(".ufo"):
+            path += ".ufo"
 
     return path
 
@@ -100,22 +100,22 @@ class FontraMainWidget(QMainWindow):
         self.setWindowTitle("Fontra Pak")
         self.resize(720, 480)
 
-        fileMenu = self.menuBar().addMenu('File')
+        fileMenu = self.menuBar().addMenu("File")
 
-        newAction = fileMenu.addAction('New Font...')
+        newAction = fileMenu.addAction("New Font...")
         newAction.triggered.connect(self.new)
 
-        openFileAction = fileMenu.addAction('Open File...')
+        openFileAction = fileMenu.addAction("Open File...")
         openFileAction.triggered.connect(self.openFile)
 
-        openFolderAction = fileMenu.addAction('Open Folder...')
+        openFolderAction = fileMenu.addAction("Open Folder...")
         openFolderAction.triggered.connect(self.openFolder)
 
-        '''
+        """
         # TODO: implement save as
         saveAsAction = fileMenu.addAction('Save as...')
         saveAsAction.triggered.connect(self.saveAs)
-        '''
+        """
 
         self.settings = QSettings("xyz.fontra", "FontraPak")
 
@@ -171,12 +171,16 @@ class FontraMainWidget(QMainWindow):
         event.acceptProposedAction()
 
     def new(self):
-        title = 'New Font...'
-        fileName = 'untitled'
-        dialog = QFileDialog.getSaveFileName(self,
-                                             title,
-                                             '/home/user/' + fileName,
-                                             'Designspace (*.designspace);;Fontra (*.fontra);;Robo CJK (*.rcjk);;Unified Font Object (*.ufo)')
+        title = "New Font..."
+        fileName = "untitled"
+        dialog = QFileDialog.getSaveFileName(
+            self,
+            title,
+            "/home/user/" + fileName,
+            "Designspace (*.designspace);"
+            ";Fontra (*.fontra);;Robo CJK (*.rcjk);"
+            ";Unified Font Object (*.ufo)",
+        )
 
         projectPath = getFontPath(dialog[0], dialog[1])
         destBackend = newFileSystemBackend(projectPath)
@@ -186,23 +190,27 @@ class FontraMainWidget(QMainWindow):
             openFile(projectPath, self.port)
 
     def openFolder(self):
-        # TODO: Open folder will be opsolete 
+        # TODO: Open folder will be opsolete
         # once .fontra folder are rekognized as 'files'.
-        projectPath = QFileDialog.getExistingDirectory(self, "Open Fontra Folder", "/home/user/", QFileDialog.Option.ShowDirsOnly)
+        projectPath = QFileDialog.getExistingDirectory(
+            self, "Open Fontra Folder", "/home/user/", QFileDialog.Option.ShowDirsOnly
+        )
         if os.path.exists(projectPath):
             openFile(projectPath, self.port)
 
     def openFile(self):
-        dialog = QFileDialog.getOpenFileName(self, 'Open File')
+        dialog = QFileDialog.getOpenFileName(self, "Open File")
         projectPath = dialog[0]
         if os.path.exists(projectPath):
             openFile(projectPath, self.port)
 
-    def saveAs(self, title='Save as...', fileName='untitled'):
-        dialog = QFileDialog.getSaveFileName(self,
-                                             title,
-                                             '/home/user/' + fileName,
-                                             'Designspace (*.designspace);;Fontra (*.fontra);;Robo CJK (*.rcjk);;Unified Font Object (*.ufo)')
+    def saveAs(self, title="Save as...", fileName="untitled"):
+        dialog = QFileDialog.getSaveFileName(
+            self,
+            title,
+            "/home/user/" + fileName,
+            "Designspace (*.designspace);;Fontra (*.fontra);;Robo CJK (*.rcjk);;Unified Font Object (*.ufo)",
+        )
 
         projectPath = getFontPath(dialog[0], dialog[1])
         if not os.path.exists(projectPath):
