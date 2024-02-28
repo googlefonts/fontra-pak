@@ -68,7 +68,9 @@ fileTypes = [
     ("Unified Font Object", "ufo"),
 ]
 
-fileTypesMapping = {f"{name} (*.{extension})": f".{extension}" for name, extension in fileTypes}
+fileTypesMapping = {
+    f"{name} (*.{extension})": f".{extension}" for name, extension in fileTypes
+}
 
 
 class FontraApplication(QApplication):
