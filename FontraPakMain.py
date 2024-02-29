@@ -157,25 +157,25 @@ class FontraMainWidget(QMainWindow):
         event.acceptProposedAction()
 
     def newFont(self):
-        projectPath, fileType = QFileDialog.getSaveFileName(
+        fontPath, fileType = QFileDialog.getSaveFileName(
             self,
             "New Font...",
             "Untitled",
             ";;".join(fileTypesMapping),
         )
 
-        if not projectPath:
+        if not fontPath:
             # User cancelled
             return
 
-        projectPath = getFontPath(projectPath, fileType)
+        fontPath = getFontPath(fontPath, fileType)
 
-        // Create a new empty project on disk
-        destBackend = newFileSystemBackend(projectPath)
+        # Create a new empty project on disk
+        destBackend = newFileSystemBackend(fontPath)
         destBackend.close()
 
-        if os.path.exists(projectPath):
-            openFile(projectPath, self.port)
+        if os.path.exists(fontPath):
+            openFile(fontPath, self.port)
 
 
 def openFile(path, port):
