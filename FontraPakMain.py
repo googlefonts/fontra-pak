@@ -157,12 +157,10 @@ class FontraMainWidget(QMainWindow):
         event.acceptProposedAction()
 
     def newFont(self):
-        title = "New Font..."
-        fileName = "untitled"
         projectPath, fileType = QFileDialog.getSaveFileName(
             self,
-            title,
-            "/home/user/" + fileName,
+            "New Font...",
+            "untitled",
             ";;".join(fileTypesMapping),
         )
 
