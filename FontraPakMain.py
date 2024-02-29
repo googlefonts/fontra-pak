@@ -172,18 +172,18 @@ class FontraMainWidget(QMainWindow):
     def newFont(self):
         title = "New Font..."
         fileName = "untitled"
-        dialog = QFileDialog.getSaveFileName(
+        projectPath, fileType = QFileDialog.getSaveFileName(
             self,
             title,
             "/home/user/" + fileName,
             ";;".join(fileTypesMapping),
         )
 
-        if not dialog[0] or not dialog[1]:
+        if not projectPath:
             # User cancelled
             return
 
-        projectPath = getFontPath(dialog[0], dialog[1])
+        projectPath = getFontPath(projectPath, fileType)
 
         destBackend = newFileSystemBackend(projectPath)
         destBackend.close()
