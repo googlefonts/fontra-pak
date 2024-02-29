@@ -130,3 +130,6 @@ dmypy.json
 
 # Ignore local stuff
 /vault/
+
+# Ignore OS related files
+.DS_Store

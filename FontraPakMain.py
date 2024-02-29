@@ -9,13 +9,16 @@ import webbrowser
 from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
+from fontra.backends import newFileSystemBackend
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
+    QFileDialog,
     QLabel,
     QMainWindow,
+    QPushButton,
     QSizePolicy,
     QVBoxLayout,
     QWidget,
@@ -57,6 +60,18 @@ Additionally, it can read (not write) .ttf, .otf, and (with some limitations)
 .glyphs and .glyphspackage
 """
 
+fileTypes = [
+    # name, extension
+    ("Designspace", "designspace"),
+    ("Fontra", "fontra"),
+    ("RoboCJK", "rcjk"),
+    ("Unified Font Object", "ufo"),
+]
+
+fileTypesMapping = {
+    f"{name} (*.{extension})": f".{extension}" for name, extension in fileTypes
+}
+
 
 class FontraApplication(QApplication):
     def __init__(self, argv, port):
@@ -71,6 +86,14 @@ class FontraApplication(QApplication):
             return super().event(event)
 
         return True
+
+
+def getFontPath(path, fileType):
+    extension = fileTypesMapping[fileType]
+    if not path.endswith(extension):
+        path += extension
+
+    return path
 
 
 class FontraMainWidget(QMainWindow):
@@ -96,7 +119,14 @@ class FontraMainWidget(QMainWindow):
         self.label.setWordWrap(True)
 
         layout = QVBoxLayout()
+
+        button = QPushButton("&New Font...", self)
+        button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        button.clicked.connect(self.newFont)
+
+        layout.addWidget(button)
         layout.addWidget(self.label)
+
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
 
         widget = QWidget()
@@ -125,6 +155,27 @@ class FontraMainWidget(QMainWindow):
         for path in files:
             openFile(path, self.port)
         event.acceptProposedAction()
+
+    def newFont(self):
+        fontPath, fileType = QFileDialog.getSaveFileName(
+            self,
+            "New Font...",
+            "Untitled",
+            ";;".join(fileTypesMapping),
+        )
+
+        if not fontPath:
+            # User cancelled
+            return
+
+        fontPath = getFontPath(fontPath, fileType)
+
+        # Create a new empty project on disk
+        destBackend = newFileSystemBackend(fontPath)
+        destBackend.close()
+
+        if os.path.exists(fontPath):
+            openFile(fontPath, self.port)
 
 
 def openFile(path, port):
