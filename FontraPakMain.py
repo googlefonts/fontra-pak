@@ -170,6 +170,7 @@ class FontraMainWidget(QMainWindow):
 
         projectPath = getFontPath(projectPath, fileType)
 
+        // Create a new empty project on disk
         destBackend = newFileSystemBackend(projectPath)
         destBackend.close()
 
