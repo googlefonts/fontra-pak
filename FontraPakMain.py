@@ -102,6 +102,16 @@ class FontraMainWidget(QMainWindow):
         self.port = port
         self.setWindowTitle("Fontra Pak")
         self.resize(720, 480)
+        """
+        TODO: keep this for later
+        Notes:
+        The file open dialog at least needs to filter by accepted file type. It currently allows selecting of any file, which will lead to confusing errors.
+        I am considering declaring .fontra and .rcjk as packages, then at least on macOS we can treat them as files. On Windows we would still need the "open font project folder" menu, and we probably need some error checking: what if the user selects a folder that is not a valid project? (not .ufo, .fontra or .rcjk).
+        The New font and Open (file) menu's need shortcuts: command-N and command-O respectively. Not sure how that can map to control-N and control-O on non-macOS.
+
+        Maybe add 'Duplidate as' to the file menu, which would allow the user to duplicate the current project (also TTF or OTF) as a .ufo, .fontra or .rcjk. 
+        This would be useful for testing, and for creating a new project based on an existing one.
+        Maybe implemented by Fontra Pak, but triggered by the front end.
 
         fileMenu = self.menuBar().addMenu("File")
 
@@ -115,7 +125,7 @@ class FontraMainWidget(QMainWindow):
             "Open TTF, OTF, Designspace or GlyphsApp..."
         )
         openFileAction.triggered.connect(self.openFile)
-
+        """
         self.settings = QSettings("xyz.fontra", "FontraPak")
 
         self.resize(self.settings.value("size", QSize(720, 480)))
