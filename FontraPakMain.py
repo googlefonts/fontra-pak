@@ -102,22 +102,7 @@ class FontraMainWidget(QMainWindow):
         self.port = port
         self.setWindowTitle("Fontra Pak")
         self.resize(720, 480)
-        """
-        TODO: keep this for later
-        For details, please see: https://github.com/googlefonts/fontra-pak/issues/89
-        fileMenu = self.menuBar().addMenu("File")
 
-        newAction = fileMenu.addAction("New Font...")
-        newAction.triggered.connect(self.newFont)
-
-        openMenu = fileMenu.addMenu("Open...")
-        openFolderAction = openMenu.addAction("Open .fontra, .ufo or .rcjk ...")
-        openFolderAction.triggered.connect(self.openFolder)
-        openFileAction = openMenu.addAction(
-            "Open TTF, OTF, Designspace or GlyphsApp..."
-        )
-        openFileAction.triggered.connect(self.openFile)
-        """
         self.settings = QSettings("xyz.fontra", "FontraPak")
 
         self.resize(self.settings.value("size", QSize(720, 480)))
@@ -190,19 +175,6 @@ class FontraMainWidget(QMainWindow):
         destBackend = newFileSystemBackend(projectPath)
         destBackend.close()
 
-        if os.path.exists(projectPath):
-            openFile(projectPath, self.port)
-
-    def openFolder(self):
-        projectPath = QFileDialog.getExistingDirectory(
-            self, "Open Fontra Folder", "/home/user/", QFileDialog.Option.ShowDirsOnly
-        )
-        if os.path.exists(projectPath):
-            openFile(projectPath, self.port)
-
-    def openFile(self):
-        dialog = QFileDialog.getOpenFileName(self, "Open File")
-        projectPath = dialog[0]
         if os.path.exists(projectPath):
             openFile(projectPath, self.port)
 
