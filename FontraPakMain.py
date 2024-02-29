@@ -160,7 +160,7 @@ class FontraMainWidget(QMainWindow):
         projectPath, fileType = QFileDialog.getSaveFileName(
             self,
             "New Font...",
-            "untitled",
+            "Untitled",
             ";;".join(fileTypesMapping),
         )
 
