@@ -139,7 +139,7 @@ class FontraMainWidget(QMainWindow):
             lambda: self.settings.setValue("sampleText", self.textBox.text())
         )
         h_layout = QHBoxLayout()
-        h_layout.addWidget(QLabel("Inital sample text:"))
+        h_layout.addWidget(QLabel("Initial sample text:"))
         h_layout.addWidget(self.textBox)
         layout.addLayout(h_layout)
 
