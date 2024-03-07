@@ -11,7 +11,7 @@ from urllib.parse import quote
 from fontra import __version__ as fontraVersion
 from fontra.backends import newFileSystemBackend
 from fontra.core.server import FontraServer, findFreeTCPPort
-from fontra.core.urlfragment import dumpURLFragment, loadURLFragment
+from fontra.core.urlfragment import dumpURLFragment
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
