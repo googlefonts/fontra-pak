@@ -10,13 +10,14 @@ from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
 from fontra.backends import newFileSystemBackend
-from fontra.core.urlfragment import dumpURLFragment, loadURLFragment
 from fontra.core.server import FontraServer, findFreeTCPPort
+from fontra.core.urlfragment import dumpURLFragment, loadURLFragment
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -25,7 +26,6 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
-    QFrame,
 )
 
 commonCSS = """
@@ -123,20 +123,21 @@ class FontraMainWidget(QMainWindow):
         self.label.setWordWrap(True)
 
         layout = QVBoxLayout()
-        
+
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
 
         layout.addWidget(button)
         layout.addWidget(self.label)
-        
+
         self.textBox = QLineEdit(self.settings.value("sampleText", "Hello"), self)
         self.textBox.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
         )
         self.textBox.textChanged.connect(
-            lambda: self.settings.setValue("sampleText", self.textBox.text()))
+            lambda: self.settings.setValue("sampleText", self.textBox.text())
+        )
         h_layout = QHBoxLayout()
         h_layout.addWidget(QLabel("Inital sample text:"))
         h_layout.addWidget(self.textBox)
@@ -207,7 +208,7 @@ def openFile(path, port, defaultText="Hello"):
         assert parts[0] == "/"
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
-    
+
     urlFragment = dumpURLFragment({"text": defaultText})
     webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
 
