@@ -25,6 +25,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
+    QFrame,
 )
 
 commonCSS = """
@@ -122,21 +123,29 @@ class FontraMainWidget(QMainWindow):
         self.label.setWordWrap(True)
 
         layout = QVBoxLayout()
-        h_layout = QHBoxLayout()
-        layout.addLayout(h_layout)
-
+        
         button = QPushButton("&New Font...", self)
-        button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
-        h_layout.addWidget(button)
 
-        self.textBox = QLineEdit("Your sample text here", self)
+        layout.addWidget(button)
+        layout.addWidget(self.label)
+        
+        self.textBox = QLineEdit(self.settings.value("sampleText", "Hello"), self)
         self.textBox.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
         )
+        self.textBox.textChanged.connect(
+            lambda: self.settings.setValue("sampleText", self.textBox.text()))
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(QLabel("Inital sample text:"))
         h_layout.addWidget(self.textBox)
+        layout.addLayout(h_layout)
 
-        layout.addWidget(self.label)
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+        layout.addWidget(separator)
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
 
         widget = QWidget()
@@ -198,6 +207,7 @@ def openFile(path, port, defaultText="Hello"):
         assert parts[0] == "/"
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
+    
     urlFragment = dumpURLFragment({"text": defaultText})
     webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
 
