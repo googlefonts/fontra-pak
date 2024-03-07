@@ -10,6 +10,7 @@ from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
 from fontra.backends import newFileSystemBackend
+from fontra.core.urlfragment import dumpURLFragment, loadURLFragment
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
@@ -189,14 +190,6 @@ class FontraMainWidget(QMainWindow):
             openFile(fontPath, self.port, defaultText=textboxValue)
 
 
-def prepareDefaultTextForURL(text):
-    if not text:
-        return "Hello"
-    if text == "Your sample text here":
-        return "Hello"
-    return text.replace(" ", "%20").replace("\n", "%20").replace("\r", "%20")
-
-
 def openFile(path, port, defaultText="Hello"):
     path = pathlib.Path(path).resolve()
     assert path.is_absolute()
@@ -205,8 +198,8 @@ def openFile(path, port, defaultText="Hello"):
         assert parts[0] == "/"
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
-    txt = prepareDefaultTextForURL(defaultText)
-    webbrowser.open(f"http://localhost:{port}/editor/-/{path}?text=%22{txt}%22")
+    urlFragment = dumpURLFragment({"text": defaultText})
+    webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
 
 
 def runFontraServer(port):
