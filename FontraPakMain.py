@@ -128,12 +128,14 @@ class FontraMainWidget(QMainWindow):
 
         self.textBox = QLineEdit("Your sample text here!", self)
         # textBox.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        # textBox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        # layout.addWidget(textBox)
+        self.textBox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.textBox.setStyleSheet("border: none;")
+        layout.addWidget(self.textBox)
 
-        layout.textbox = self.textBox
-        layout.textbox.move(20, 20)
-        layout.textbox.resize(280, 40)
+        # layout.textbox = self.textBox
+        #layout.textbox.move(20, 20)
+        #layout.textbox.resize(100%, 40)
+        # layout.textbox.setStyleSheet("border: 1px solid black;")
 
         layout.addWidget(self.label)
 
