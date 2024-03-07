@@ -23,6 +23,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QLineEdit,
+    QHBoxLayout,
 )
 
 commonCSS = """
@@ -120,25 +121,20 @@ class FontraMainWidget(QMainWindow):
         self.label.setWordWrap(True)
 
         layout = QVBoxLayout()
-
+        h_layout = QHBoxLayout()
+        layout.addLayout(h_layout)
+        
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
-        layout.addWidget(button)
+        h_layout.addWidget(button)
 
         self.textBox = QLineEdit("Your sample text here!", self)
-        # textBox.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.textBox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.textBox.setStyleSheet("border: none;")
-        layout.addWidget(self.textBox)
-
-        # layout.textbox = self.textBox
-        #layout.textbox.move(20, 20)
-        #layout.textbox.resize(100%, 40)
-        # layout.textbox.setStyleSheet("border: 1px solid black;")
+        #self.textBox.setStyleSheet("border: none;")
+        h_layout.addWidget(self.textBox)
 
         layout.addWidget(self.label)
-
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
 
         widget = QWidget()
