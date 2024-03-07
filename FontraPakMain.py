@@ -16,14 +16,14 @@ from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
+    QHBoxLayout,
     QLabel,
+    QLineEdit,
     QMainWindow,
     QPushButton,
     QSizePolicy,
     QVBoxLayout,
     QWidget,
-    QLineEdit,
-    QHBoxLayout,
 )
 
 commonCSS = """
@@ -123,14 +123,16 @@ class FontraMainWidget(QMainWindow):
         layout = QVBoxLayout()
         h_layout = QHBoxLayout()
         layout.addLayout(h_layout)
-        
+
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
         h_layout.addWidget(button)
 
         self.textBox = QLineEdit("Your sample text here", self)
-        self.textBox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.textBox.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
+        )
         h_layout.addWidget(self.textBox)
 
         layout.addWidget(self.label)
