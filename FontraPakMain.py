@@ -22,6 +22,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
+    QLineEdit,
 )
 
 commonCSS = """
@@ -123,8 +124,17 @@ class FontraMainWidget(QMainWindow):
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
-
         layout.addWidget(button)
+
+        self.textBox = QLineEdit("Your sample text here!", self)
+        # textBox.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        # textBox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        # layout.addWidget(textBox)
+
+        layout.textbox = self.textBox
+        layout.textbox.move(20, 20)
+        layout.textbox.resize(280, 40)
+
         layout.addWidget(self.label)
 
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
@@ -153,7 +163,8 @@ class FontraMainWidget(QMainWindow):
         self.label.setStyleSheet(neutralCSS)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
-            openFile(path, self.port)
+            textboxValue = self.textBox.text()
+            openFile(path, self.port, defaultText=textboxValue)
         event.acceptProposedAction()
 
     def newFont(self):
@@ -175,10 +186,11 @@ class FontraMainWidget(QMainWindow):
         destBackend.close()
 
         if os.path.exists(fontPath):
-            openFile(fontPath, self.port)
+            textboxValue = self.textBox.text()
+            openFile(fontPath, self.port, defaultText=textboxValue)
 
 
-def openFile(path, port):
+def openFile(path, port, defaultText="Hello"):
     path = pathlib.Path(path).resolve()
     assert path.is_absolute()
     parts = list(path.parts)
@@ -186,7 +198,8 @@ def openFile(path, port):
         assert parts[0] == "/"
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
-    webbrowser.open(f"http://localhost:{port}/editor/-/{path}?text=%22Hello%22")
+    txt = defaultText.replace(" ", "%20").replace("\n", "%20").replace("\r", "%20")
+    webbrowser.open(f"http://localhost:{port}/editor/-/{path}?text=%22{txt}%22")
 
 
 def runFontraServer(port):
