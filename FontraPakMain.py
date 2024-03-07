@@ -129,9 +129,8 @@ class FontraMainWidget(QMainWindow):
         button.clicked.connect(self.newFont)
         h_layout.addWidget(button)
 
-        self.textBox = QLineEdit("Your sample text here!", self)
+        self.textBox = QLineEdit("Your sample text here", self)
         self.textBox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        #self.textBox.setStyleSheet("border: none;")
         h_layout.addWidget(self.textBox)
 
         layout.addWidget(self.label)
@@ -188,6 +187,14 @@ class FontraMainWidget(QMainWindow):
             openFile(fontPath, self.port, defaultText=textboxValue)
 
 
+def prepareDefaultTextForURL(text):
+    if not text:
+        return "Hello"
+    if text == "Your sample text here":
+        return "Hello"
+    return text.replace(" ", "%20").replace("\n", "%20").replace("\r", "%20")
+
+
 def openFile(path, port, defaultText="Hello"):
     path = pathlib.Path(path).resolve()
     assert path.is_absolute()
@@ -196,7 +203,7 @@ def openFile(path, port, defaultText="Hello"):
         assert parts[0] == "/"
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
-    txt = defaultText.replace(" ", "%20").replace("\n", "%20").replace("\r", "%20")
+    txt = prepareDefaultTextForURL(defaultText)
     webbrowser.open(f"http://localhost:{port}/editor/-/{path}?text=%22{txt}%22")
 
 
