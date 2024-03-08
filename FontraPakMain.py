@@ -17,7 +17,6 @@ from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
-    QFrame,
     QLabel,
     QMainWindow,
     QPlainTextEdit,
