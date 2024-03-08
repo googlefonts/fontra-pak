@@ -11,6 +11,7 @@ from urllib.parse import quote
 from fontra import __version__ as fontraVersion
 from fontra.backends import newFileSystemBackend
 from fontra.core.server import FontraServer, findFreeTCPPort
+from fontra.core.urlfragment import dumpURLFragment
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
 from PyQt6.QtWidgets import (
@@ -18,6 +19,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QLabel,
     QMainWindow,
+    QPlainTextEdit,
     QPushButton,
     QSizePolicy,
     QVBoxLayout,
@@ -127,6 +129,14 @@ class FontraMainWidget(QMainWindow):
         layout.addWidget(button)
         layout.addWidget(self.label)
 
+        self.textBox = QPlainTextEdit(self.settings.value("sampleText", "Hello"), self)
+        self.textBox.setFixedHeight(50)
+
+        self.textBox.textChanged.connect(
+            lambda: self.settings.setValue("sampleText", self.textBox.toPlainText())
+        )
+        layout.addWidget(QLabel("Initial sample text:"))
+        layout.addWidget(self.textBox)
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
 
         widget = QWidget()
@@ -153,7 +163,8 @@ class FontraMainWidget(QMainWindow):
         self.label.setStyleSheet(neutralCSS)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
-            openFile(path, self.port)
+            textboxValue = self.textBox.toPlainText()
+            openFile(path, self.port, sampleText=textboxValue)
         event.acceptProposedAction()
 
     def newFont(self):
@@ -175,10 +186,11 @@ class FontraMainWidget(QMainWindow):
         destBackend.close()
 
         if os.path.exists(fontPath):
-            openFile(fontPath, self.port)
+            textboxValue = self.textBox.toPlainText()
+            openFile(fontPath, self.port, sampleText=textboxValue)
 
 
-def openFile(path, port):
+def openFile(path, port, sampleText="Hello"):
     path = pathlib.Path(path).resolve()
     assert path.is_absolute()
     parts = list(path.parts)
@@ -186,7 +198,9 @@ def openFile(path, port):
         assert parts[0] == "/"
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
-    webbrowser.open(f"http://localhost:{port}/editor/-/{path}?text=%22Hello%22")
+
+    urlFragment = dumpURLFragment({"text": sampleText})
+    webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
 
 
 def runFontraServer(port):
