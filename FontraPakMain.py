@@ -21,10 +21,10 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QTextEdit,
     QMainWindow,
     QPushButton,
     QSizePolicy,
+    QTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -134,7 +134,7 @@ class FontraMainWidget(QMainWindow):
 
         self.textBox = QTextEdit(self.settings.value("sampleText", "Hello"), self)
         self.textBox.setFixedHeight(50)
-        
+
         self.textBox.textChanged.connect(
             lambda: self.settings.setValue("sampleText", self.textBox.toHtml())
         )
