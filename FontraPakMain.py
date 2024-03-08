@@ -21,6 +21,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QTextEdit,
     QMainWindow,
     QPushButton,
     QSizePolicy,
@@ -125,23 +126,20 @@ class FontraMainWidget(QMainWindow):
         layout = QVBoxLayout()
 
         button = QPushButton("&New Font...", self)
-        button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
 
         layout.addWidget(button)
         layout.addWidget(self.label)
 
-        self.textBox = QLineEdit(self.settings.value("sampleText", "Hello"), self)
-        self.textBox.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
-        )
+        self.textBox = QTextEdit(self.settings.value("sampleText", "Hello"), self)
+        self.textBox.setFixedHeight(50)
+        
         self.textBox.textChanged.connect(
-            lambda: self.settings.setValue("sampleText", self.textBox.text())
+            lambda: self.settings.setValue("sampleText", self.textBox.toHtml())
         )
-        h_layout = QHBoxLayout()
-        h_layout.addWidget(QLabel("Initial sample text:"))
-        h_layout.addWidget(self.textBox)
-        layout.addLayout(h_layout)
+        layout.addWidget(QLabel("Initial sample text:"))
+        layout.addWidget(self.textBox)
 
         separator = QFrame()
         separator.setFrameShape(QFrame.Shape.HLine)
@@ -173,7 +171,7 @@ class FontraMainWidget(QMainWindow):
         self.label.setStyleSheet(neutralCSS)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
-            textboxValue = self.textBox.text()
+            textboxValue = self.textBox.toPlainText()
             openFile(path, self.port, defaultText=textboxValue)
         event.acceptProposedAction()
 
@@ -196,7 +194,7 @@ class FontraMainWidget(QMainWindow):
         destBackend.close()
 
         if os.path.exists(fontPath):
-            textboxValue = self.textBox.text()
+            textboxValue = self.textBox.toPlainText()
             openFile(fontPath, self.port, defaultText=textboxValue)
 
 
