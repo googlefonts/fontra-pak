@@ -138,11 +138,6 @@ class FontraMainWidget(QMainWindow):
         )
         layout.addWidget(QLabel("Initial sample text:"))
         layout.addWidget(self.textBox)
-
-        separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.HLine)
-        separator.setFrameShadow(QFrame.Shadow.Sunken)
-        layout.addWidget(separator)
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
 
         widget = QWidget()
@@ -170,7 +165,7 @@ class FontraMainWidget(QMainWindow):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
             textboxValue = self.textBox.toPlainText()
-            openFile(path, self.port, defaultText=textboxValue)
+            openFile(path, self.port, sampleText=textboxValue)
         event.acceptProposedAction()
 
     def newFont(self):
@@ -193,10 +188,10 @@ class FontraMainWidget(QMainWindow):
 
         if os.path.exists(fontPath):
             textboxValue = self.textBox.toPlainText()
-            openFile(fontPath, self.port, defaultText=textboxValue)
+            openFile(fontPath, self.port, sampleText=textboxValue)
 
 
-def openFile(path, port, defaultText="Hello"):
+def openFile(path, port, sampleText="Hello"):
     path = pathlib.Path(path).resolve()
     assert path.is_absolute()
     parts = list(path.parts)
@@ -205,7 +200,7 @@ def openFile(path, port, defaultText="Hello"):
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
 
-    urlFragment = dumpURLFragment({"text": defaultText})
+    urlFragment = dumpURLFragment({"text": sampleText})
     webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
 
 
