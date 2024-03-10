@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import multiprocessing
 import os
@@ -182,12 +183,17 @@ class FontraMainWidget(QMainWindow):
         fontPath = getFontPath(fontPath, fileType)
 
         # Create a new empty project on disk
-        destBackend = newFileSystemBackend(fontPath)
-        destBackend.close()
+        asyncio.run(createNewFont(fontPath))
 
         if os.path.exists(fontPath):
             textboxValue = self.textBox.toPlainText()
             openFile(fontPath, self.port, sampleText=textboxValue)
+
+
+async def createNewFont(fontPath):
+    # Create a new empty project on disk
+    destBackend = newFileSystemBackend(fontPath)
+    await destBackend.aclose()
 
 
 def openFile(path, port, sampleText="Hello"):
