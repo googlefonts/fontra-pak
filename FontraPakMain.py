@@ -7,6 +7,7 @@ import secrets
 import signal
 import sys
 import webbrowser
+from importlib.metadata import entry_points
 from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
@@ -227,6 +228,9 @@ def runFontraServer(port):
 
 
 def main():
+    for e in entry_points(group="fontra.filesystem.backends"):
+        print("-", e.name)
+
     port = findFreeTCPPort()
     serverProcess = multiprocessing.Process(target=runFontraServer, args=(port,))
     serverProcess.start()
