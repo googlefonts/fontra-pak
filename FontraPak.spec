@@ -1,6 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 import sys
-from PyInstaller.utils.hooks import collect_all
+from importlib.metadata import PackageNotFoundError
+from PyInstaller.utils.hooks import collect_all, copy_metadata
 
 datas = []
 binaries = []
@@ -18,6 +19,10 @@ for module_name in modules_to_collect_all:
     datas += tmp_ret[0]
     binaries += tmp_ret[1]
     hiddenimports += tmp_ret[2]
+    try:
+        datas += copy_metadata(module_name)
+    except PackageNotFoundError:
+        print("no metadata for", module_name)
 
 
 block_cipher = None
