@@ -11,7 +11,8 @@ from packaging.utils import parse_wheel_filename
 
 #
 # The problem we are trying to solve is:
-# - To build a universal2 app with py2app, we need _all_ compiled packages to be universal2
+# - To build a universal2 app with py2app or PyInstaller, we need _all_ compiled packages
+#   to be universal2
 # - This is hard for two reasons:
 #   - Not all packages offer universal2 wheels
 #   - When running on x86, pip will serve x86, even if universal2 is available
