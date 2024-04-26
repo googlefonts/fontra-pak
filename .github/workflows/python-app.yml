@@ -37,12 +37,15 @@ jobs:
         run: |
           curl https://www.python.org/ftp/python/3.12.3/python-3.12.3-macos11.pkg --output python-installer.pkg
           sudo installer -pkg python-installer.pkg -target /
-          python3 --version
-          python3 -c "import platform; print('macOS version:', platform.mac_ver()[0])"
+          which python3
+          which python3.12
+          python3.12 --version
+          python3.12 -c "import platform; print('platform:', platform.platform())"
+          python3.12 -c "import platform; print('macOS version:', platform.mac_ver()[0])"
 
       - name: Setup Virtual Environment
         run: |
-          python3 -m venv venv
+          python3.12 -m venv venv
           source venv/bin/activate
           python -c "import sys; print('\n'.join(sys.path))"
 
