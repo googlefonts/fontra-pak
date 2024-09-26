@@ -11,6 +11,7 @@ from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
 from fontra.backends import newFileSystemBackend
+from fontra.core.classes import FontSource, LineMetric
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.core.urlfragment import dumpURLFragment
 from fontra.filesystem.projectmanager import FileSystemProjectManager
@@ -203,9 +204,29 @@ class FontraMainWidget(QMainWindow):
             openFile(fontPath, self.port, sampleText=textboxValue)
 
 
+defaultLineMetrics = {
+    "ascender": (750, 16),
+    "descender": (-250, -16),
+    "xHeight": (500, 16),
+    "capHeight": (750, 16),
+    "baseline": (0, -16),
+}
+
+
 async def createNewFont(fontPath):
     # Create a new empty project on disk
+    import secrets
+
+    defaultSource = FontSource(
+        name="Regular",
+        lineMetricsHorizontalLayout={
+            name: LineMetric(value=value, zone=zone)
+            for name, (value, zone) in defaultLineMetrics.items()
+        },
+    )
+
     destBackend = newFileSystemBackend(fontPath)
+    await destBackend.putSources({secrets.token_hex(4): defaultSource})
     await destBackend.aclose()
 
 
