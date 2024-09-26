@@ -170,10 +170,14 @@ class FontraMainWidget(QMainWindow):
         event.acceptProposedAction()
 
     def newFont(self):
+        activeFolder = self.settings.value("activeFolder", os.path.expanduser("~"))
+        if not os.path.isdir(activeFolder):
+            activeFolder = os.path.expanduser("~")
+
         fontPath, fileType = QFileDialog.getSaveFileName(
             self,
             "New Font...",
-            "Untitled",
+            os.path.join(activeFolder, "Untitled"),
             ";;".join(fileTypesMapping),
         )
 
@@ -182,6 +186,8 @@ class FontraMainWidget(QMainWindow):
             return
 
         fontPath = getFontPath(fontPath, fileType)
+
+        self.settings.setValue("activeFolder", os.path.dirname(fontPath))
 
         # Create a new empty project on disk
         try:
