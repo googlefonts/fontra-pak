@@ -20,6 +20,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QLabel,
     QMainWindow,
+    QMessageBox,
     QPlainTextEdit,
     QPushButton,
     QSizePolicy,
@@ -183,7 +184,13 @@ class FontraMainWidget(QMainWindow):
         fontPath = getFontPath(fontPath, fileType)
 
         # Create a new empty project on disk
-        asyncio.run(createNewFont(fontPath))
+        try:
+            asyncio.run(createNewFont(fontPath))
+        except Exception as e:
+            showMessageDialog(
+                "The new font could not be saved", repr(e), QMessageBox.Icon.Warning
+            )
+            return
 
         if os.path.exists(fontPath):
             textboxValue = self.textBox.toPlainText()
@@ -207,6 +214,15 @@ def openFile(path, port, sampleText="Hello"):
 
     urlFragment = dumpURLFragment({"text": sampleText})
     webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
+
+
+def showMessageDialog(message, infoText, icon=None):
+    dialog = QMessageBox()
+    if icon is not None:
+        dialog.setIcon(icon)
+    dialog.setText(message)
+    dialog.setInformativeText(infoText)
+    dialog.exec()
 
 
 def runFontraServer(port):
