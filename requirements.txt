@@ -1,7 +1,7 @@
 git+https://github.com/googlefonts/fontra.git
 git+https://github.com/googlefonts/fontra-rcjk.git
 git+https://github.com/googlefonts/fontra-glyphs.git
-aiohttp==3.10.5
+aiohttp==3.10.6
 pyinstaller==6.10.0
 # PyQt6 6.5.0 does not support macOS 10.15 anymore, so for now
 # we'll stick to these:
