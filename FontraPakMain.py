@@ -87,6 +87,16 @@ fileTypesMapping = {
     f"{name} (*.{extension})": f".{extension}" for name, extension in fileTypes
 }
 
+exportFileTypes = [
+    # name, extension
+    ("TrueType", "ttf"),
+    ("OpenType", "otf"),
+] + fileTypes
+
+exportFileTypesMapping = {
+    f"{name} (*.{extension})": f".{extension}" for name, extension in exportFileTypes
+}
+
 
 class FontraApplication(QApplication):
     def __init__(self, argv, port):
@@ -103,8 +113,8 @@ class FontraApplication(QApplication):
         return True
 
 
-def getFontPath(path, fileType):
-    extension = fileTypesMapping[fileType]
+def getFontPath(path, fileType, mapping):
+    extension = mapping[fileType]
     if not path.endswith(extension):
         path += extension
 
@@ -180,15 +190,18 @@ class FontraMainWidget(QMainWindow):
             openFile(path, self.port, sampleText=textboxValue)
         event.acceptProposedAction()
 
-    def newFont(self):
+    @property
+    def activeFolder(self):
         activeFolder = self.settings.value("activeFolder", os.path.expanduser("~"))
         if not os.path.isdir(activeFolder):
             activeFolder = os.path.expanduser("~")
+        return activeFolder
 
+    def newFont(self):
         fontPath, fileType = QFileDialog.getSaveFileName(
             self,
             "New Font...",
-            os.path.join(activeFolder, "Untitled"),
+            os.path.join(self.activeFolder, "Untitled"),
             ";;".join(fileTypesMapping),
         )
 
@@ -196,7 +209,7 @@ class FontraMainWidget(QMainWindow):
             # User cancelled
             return
 
-        fontPath = getFontPath(fontPath, fileType)
+        fontPath = getFontPath(fontPath, fileType, fileTypesMapping)
 
         self.settings.setValue("activeFolder", os.path.dirname(fontPath))
 
@@ -215,6 +228,27 @@ class FontraMainWidget(QMainWindow):
 
     def messageFromServer(self, action, argument):
         print("messageFromServer", action, argument)
+        handler = getattr(self, action, None)
+        if handler is not None:
+            handler(argument)
+
+    def exportAs(self, path):
+        path = pathlib.Path(path)
+
+        fontPath, fileType = QFileDialog.getSaveFileName(
+            self,
+            "Export font...",
+            os.path.join(self.activeFolder, path.stem),
+            ";;".join(exportFileTypesMapping),
+        )
+
+        if not fontPath:
+            # User cancelled
+            return
+
+        fontPath = getFontPath(fontPath, fileType, exportFileTypesMapping)
+
+        print("export as", fontPath, fileType)
 
 
 defaultLineMetrics = {
