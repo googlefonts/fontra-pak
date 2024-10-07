@@ -15,7 +15,17 @@ from fontra.core.classes import FontSource, LineMetric
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.core.urlfragment import dumpURLFragment
 from fontra.filesystem.projectmanager import FileSystemProjectManager
-from PyQt6.QtCore import QEvent, QPoint, QSettings, QSize, Qt, QTimer
+from PyQt6.QtCore import (
+    QEvent,
+    QObject,
+    QPoint,
+    QSettings,
+    QSize,
+    Qt,
+    QThread,
+    QTimer,
+    pyqtSignal,
+)
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -203,6 +213,9 @@ class FontraMainWidget(QMainWindow):
             textboxValue = self.textBox.toPlainText()
             openFile(fontPath, self.port, sampleText=textboxValue)
 
+    def messageFromServer(self, action, argument):
+        print("messageFromServer", action, argument)
+
 
 defaultLineMetrics = {
     "ascender": (750, 16),
@@ -252,13 +265,19 @@ def showMessageDialog(message, infoText, icon=None):
     dialog.exec()
 
 
-def runFontraServer(port):
+class FontraPakProjectManager(FileSystemProjectManager):
+    async def exportAs(self, fontHandler, options):
+        self.appQueue.put(("exportAs", os.fspath(fontHandler.projectIdentifier)))
+
+
+def runFontraServer(port, queue):
     logging.basicConfig(
         format="%(asctime)s %(name)-17s %(levelname)-8s %(message)s",
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    manager = FileSystemProjectManager(None)
+    manager = FontraPakProjectManager(None)
+    manager.appQueue = queue
     server = FontraServer(
         host="localhost",
         httpPort=port,
@@ -269,15 +288,66 @@ def runFontraServer(port):
     server.run(showLaunchBanner=False)
 
 
+class QueueFetchWorker(QObject):
+    fetched = pyqtSignal(str, str)
+    finished = pyqtSignal()
+
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def run(self):
+        while True:
+            action, argument = self.queue.get()
+            if action is None:
+                break
+
+            self.fetched.emit(action, argument)
+
+        self.finished.emit()
+
+
+class AppMediator:
+    def __init__(self):
+        self.queue = multiprocessing.Queue()
+        self.thread = QThread()
+        self.queueWorker = QueueFetchWorker(self.queue)
+        self.queueWorker.moveToThread(self.thread)
+        self.thread.started.connect(self.queueWorker.run)
+        self.queueWorker.finished.connect(self.thread.quit)
+        self.queueWorker.finished.connect(self.queueWorker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.start()
+
+    def connect(self, callback):
+        self.queueWorker.fetched.connect(callback)
+
+    def close(self):
+        self.queue.put((None, None))
+        self.thread.quit()
+        self.thread.wait()
+
+
 def main():
+    mediator = AppMediator()
+
     port = findFreeTCPPort()
-    serverProcess = multiprocessing.Process(target=runFontraServer, args=(port,))
+    serverProcess = multiprocessing.Process(
+        target=runFontraServer, args=(port, mediator.queue)
+    )
+
     serverProcess.start()
 
     app = FontraApplication(sys.argv, port)
-    app.aboutToQuit.connect(lambda: os.kill(serverProcess.pid, signal.SIGINT))
+
+    def cleanup():
+        mediator.close()
+        os.kill(serverProcess.pid, signal.SIGINT)
+
+    app.aboutToQuit.connect(cleanup)
 
     mainWindow = FontraMainWidget(port)
+    mediator.connect(mainWindow.messageFromServer)
     mainWindow.show()
 
     if "test-startup" in sys.argv:
