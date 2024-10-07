@@ -227,14 +227,19 @@ class FontraMainWidget(QMainWindow):
             openFile(fontPath, self.port, sampleText=textboxValue)
 
     def messageFromServer(self, item):
-        action, argument = item
-        print("messageFromServer", action, argument)
+        action, path, options = item
         handler = getattr(self, action, None)
         if handler is not None:
-            handler(argument)
+            handler(path, options)
 
-    def exportAs(self, path):
+    def exportAs(self, path, options):
         path = pathlib.Path(path)
+
+        wFlags = self.windowFlags()
+        self.setWindowFlags(wFlags | Qt.WindowType.WindowStaysOnTopHint)
+        self.show()
+        self.setWindowFlags(wFlags)
+        self.show()
 
         fontPath, fileType = QFileDialog.getSaveFileName(
             self,
@@ -249,7 +254,7 @@ class FontraMainWidget(QMainWindow):
 
         fontPath = getFontPath(fontPath, fileType, exportFileTypesMapping)
 
-        print("export as", fontPath, fileType)
+        print("export as", fontPath, fileType, options)
 
 
 defaultLineMetrics = {
@@ -302,7 +307,7 @@ def showMessageDialog(message, infoText, icon=None):
 
 class FontraPakProjectManager(FileSystemProjectManager):
     async def exportAs(self, fontHandler, options):
-        self.appQueue.put(("exportAs", fontHandler.projectIdentifier))
+        self.appQueue.put(("exportAs", fontHandler.projectIdentifier, options))
 
 
 def runFontraServer(port, queue):
