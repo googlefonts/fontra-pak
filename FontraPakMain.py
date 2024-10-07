@@ -7,10 +7,12 @@ import secrets
 import signal
 import sys
 import webbrowser
+from contextlib import aclosing
 from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
-from fontra.backends import newFileSystemBackend
+from fontra.backends import getFileSystemBackend, newFileSystemBackend
+from fontra.backends.copy import copyFont
 from fontra.core.classes import FontSource, LineMetric
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.core.urlfragment import dumpURLFragment
@@ -235,7 +237,7 @@ class FontraMainWidget(QMainWindow):
             handler(path, options)
 
     def exportAs(self, path, options):
-        path = pathlib.Path(path)
+        sourcePath = pathlib.Path(path)
         fileExtension = options["format"]
 
         wFlags = self.windowFlags()
@@ -244,20 +246,28 @@ class FontraMainWidget(QMainWindow):
         self.setWindowFlags(wFlags)
         self.show()
 
-        fontPath, fileType = QFileDialog.getSaveFileName(
+        destPath, fileType = QFileDialog.getSaveFileName(
             self,
             "Export font...",
-            os.path.join(self.activeFolder, path.stem),
+            os.path.join(self.activeFolder, sourcePath.stem),
             exportExtensionMapping["." + fileExtension],
         )
 
-        if not fontPath:
+        if not destPath:
             # User cancelled
             return
 
-        fontPath = getFontPath(fontPath, fileType, exportFileTypesMapping)
+        destPath = getFontPath(destPath, fileType, exportFileTypesMapping)
 
-        print("export as", fontPath, fileType, options)
+        asyncio.run(copyFontToPath(sourcePath, destPath))
+        print("export as", destPath, fileType, options)
+
+
+async def copyFontToPath(sourcePath, destPath):
+    sourceBackend = getFileSystemBackend(sourcePath)
+    destBackend = newFileSystemBackend(destPath)
+    async with aclosing(sourceBackend), aclosing(destBackend):
+        await copyFont(sourceBackend, destBackend)
 
 
 defaultLineMetrics = {
