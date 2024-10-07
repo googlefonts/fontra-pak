@@ -97,6 +97,8 @@ exportFileTypesMapping = {
     f"{name} (*.{extension})": f".{extension}" for name, extension in exportFileTypes
 }
 
+exportExtensionMapping = {v: k for k, v in exportFileTypesMapping.items()}
+
 
 class FontraApplication(QApplication):
     def __init__(self, argv, port):
@@ -245,7 +247,7 @@ class FontraMainWidget(QMainWindow):
             self,
             "Export font...",
             os.path.join(self.activeFolder, path.stem),
-            ";;".join(exportFileTypesMapping),
+            exportExtensionMapping["." + options["format"]],
         )
 
         if not fontPath:
