@@ -226,7 +226,8 @@ class FontraMainWidget(QMainWindow):
             textboxValue = self.textBox.toPlainText()
             openFile(fontPath, self.port, sampleText=textboxValue)
 
-    def messageFromServer(self, action, argument):
+    def messageFromServer(self, item):
+        action, argument = item
         print("messageFromServer", action, argument)
         handler = getattr(self, action, None)
         if handler is not None:
@@ -301,7 +302,7 @@ def showMessageDialog(message, infoText, icon=None):
 
 class FontraPakProjectManager(FileSystemProjectManager):
     async def exportAs(self, fontHandler, options):
-        self.appQueue.put(("exportAs", os.fspath(fontHandler.projectIdentifier)))
+        self.appQueue.put(("exportAs", fontHandler.projectIdentifier))
 
 
 def runFontraServer(port, queue):
@@ -323,22 +324,29 @@ def runFontraServer(port, queue):
 
 
 class QueueFetchWorker(QObject):
-    fetched = pyqtSignal(str, str)
+    fetched = pyqtSignal(str)
     finished = pyqtSignal()
 
     def __init__(self, queue):
         super().__init__()
         self.queue = queue
+        self.items = {}
 
     def run(self):
         while True:
-            action, argument = self.queue.get()
-            if action is None:
+            item = self.queue.get()
+            if item is None:
                 break
 
-            self.fetched.emit(action, argument)
+            identifier = secrets.token_hex(4)
+            self.items[identifier] = item
+
+            self.fetched.emit(identifier)
 
         self.finished.emit()
+
+    def popItem(self, identifier):
+        return self.items.pop(identifier)
 
 
 class AppMediator:
@@ -354,10 +362,14 @@ class AppMediator:
         self.thread.start()
 
     def connect(self, callback):
-        self.queueWorker.fetched.connect(callback)
+        self.callback = callback
+        self.queueWorker.fetched.connect(self._callback)
+
+    def _callback(self, identifier):
+        self.callback(self.queueWorker.popItem(identifier))
 
     def close(self):
-        self.queue.put((None, None))
+        self.queue.put(None)
         self.thread.quit()
         self.thread.wait()
 
