@@ -236,6 +236,7 @@ class FontraMainWidget(QMainWindow):
 
     def exportAs(self, path, options):
         path = pathlib.Path(path)
+        fileExtension = options["format"]
 
         wFlags = self.windowFlags()
         self.setWindowFlags(wFlags | Qt.WindowType.WindowStaysOnTopHint)
@@ -247,7 +248,7 @@ class FontraMainWidget(QMainWindow):
             self,
             "Export font...",
             os.path.join(self.activeFolder, path.stem),
-            exportExtensionMapping["." + options["format"]],
+            exportExtensionMapping["." + fileExtension],
         )
 
         if not fontPath:
