@@ -259,15 +259,17 @@ class FontraMainWidget(QMainWindow):
 
         destPath = getFontPath(destPath, fileType, exportFileTypesMapping)
 
-        asyncio.run(copyFontToPath(sourcePath, destPath))
-        print("export as", destPath, fileType, options)
+        asyncio.run(exportFontToPath(sourcePath, destPath, fileExtension))
 
 
-async def copyFontToPath(sourcePath, destPath):
-    sourceBackend = getFileSystemBackend(sourcePath)
-    destBackend = newFileSystemBackend(destPath)
-    async with aclosing(sourceBackend), aclosing(destBackend):
-        await copyFont(sourceBackend, destBackend)
+async def exportFontToPath(sourcePath, destPath, fileExtension):
+    if fileExtension in {"ttf", "otf"}:
+        raise NotImplementedError()
+    else:
+        sourceBackend = getFileSystemBackend(sourcePath)
+        destBackend = newFileSystemBackend(destPath)
+        async with aclosing(sourceBackend), aclosing(destBackend):
+            await copyFont(sourceBackend, destBackend)
 
 
 defaultLineMetrics = {
