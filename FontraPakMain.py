@@ -439,10 +439,8 @@ def queueGetter(queue, callback):
 
 def main():
     queue = multiprocessing.Queue()
-
     port = findFreeTCPPort()
     serverProcess = multiprocessing.Process(target=runFontraServer, args=(port, queue))
-
     serverProcess.start()
 
     app = FontraApplication(sys.argv, port)
