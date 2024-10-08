@@ -274,7 +274,7 @@ class FontraMainWidget(QMainWindow):
             os.kill(exportProcess.pid, signal.SIGINT)
 
         progressDialog = QProgressDialog(
-            f"Exporting {os.path.basename(destPath)}", "Cancel", 0, 0
+            f"Exporting “{os.path.basename(destPath)}”", "Cancel", 0, 0
         )
         progressCancelButton = QPushButton("Cancel")
         progressCancelButton.clicked.connect(cancelExport)
