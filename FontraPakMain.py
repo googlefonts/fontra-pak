@@ -258,21 +258,33 @@ class FontraMainWidget(QMainWindow):
 
         destPath = getFontPath(destPath, fileType, exportFileTypesMapping)
 
-        with tempfile.NamedTemporaryFile() as logFile:
-            exportProcess = multiprocessing.Process(
-                target=exportFontToPath,
-                args=(sourcePath, destPath, fileExtension, logFile.name),
-            )
-            exportProcess.start()
+        logFilePath = tempfile.NamedTemporaryFile().name
+
+        exportProcess = multiprocessing.Process(
+            target=exportFontToPath,
+            args=(sourcePath, destPath, fileExtension, logFilePath),
+        )
+        exportProcess.start()
+
+        def exportProcessJoin():
             exportProcess.join()
+            callInMainThread(self._exportFinished, exportProcess, logFilePath)
+
+        callInNewThread(exportProcessJoin)
+
+    def _exportFinished(self, exportProcess, logFilePath):
+        try:
             if exportProcess.exitcode:
-                logFile.seek(0)
-                logData = logFile.read().decode("utf-8")
-                logLines = logData.splitlines()
-                infoText = logLines[-1] if logLines else "The reason is not clear."
-                showMessageDialog(
-                    "The font could not be exported", infoText, detailedText=logData
-                )
+                with open(logFilePath, encoding="utf-8") as logFile:
+                    logFile.seek(0)
+                    logData = logFile.read()
+                    logLines = logData.splitlines()
+                    infoText = logLines[-1] if logLines else "The reason is not clear."
+                    showMessageDialog(
+                        "The font could not be exported", infoText, detailedText=logData
+                    )
+        finally:
+            os.unlink(logFilePath)
 
 
 def exportFontToPath(sourcePath, destPath, fileExtension, logFilePath):
