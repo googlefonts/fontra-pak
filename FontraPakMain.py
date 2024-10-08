@@ -422,6 +422,12 @@ def callInMainThread(function, *args, **kwargs):
     _callInMainThreadScheduler.schedule(function, args, kwargs)
 
 
+def callInNewThread(function, *args, **kwargs):
+    thread = threading.Thread(target=function, args=args, kwargs=kwargs)
+    thread.start()
+    return thread
+
+
 def queueGetter(queue, callback):
     while True:
         item = queue.get()
@@ -450,10 +456,7 @@ def main():
 
     mainWindow = FontraMainWidget(port)
 
-    thread = threading.Thread(
-        target=queueGetter, args=(queue, mainWindow.messageFromServer)
-    )
-    thread.start()
+    thread = callInNewThread(queueGetter, queue, mainWindow.messageFromServer)
 
     mainWindow.show()
 
