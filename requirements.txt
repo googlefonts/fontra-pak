@@ -1,4 +1,5 @@
 git+https://github.com/googlefonts/fontra.git
+git+https://github.com/googlefonts/fontra-compile.git
 git+https://github.com/googlefonts/fontra-rcjk.git
 git+https://github.com/googlefonts/fontra-glyphs.git
 aiohttp==3.10.8

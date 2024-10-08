@@ -6,8 +6,9 @@ import pathlib
 import secrets
 import signal
 import sys
+import tempfile
 import webbrowser
-from contextlib import aclosing
+from contextlib import aclosing, redirect_stderr, redirect_stdout
 from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
@@ -257,15 +258,60 @@ class FontraMainWidget(QMainWindow):
 
         destPath = getFontPath(destPath, fileType, exportFileTypesMapping)
 
-        try:
-            asyncio.run(exportFontToPath(sourcePath, destPath, fileExtension))
-        except Exception as e:
-            showMessageDialog("The font could not be exported", repr(e))
+        with tempfile.NamedTemporaryFile() as logFile:
+            exportProcess = multiprocessing.Process(
+                target=exportFontToPath,
+                args=(sourcePath, destPath, fileExtension, logFile.name),
+            )
+            exportProcess.start()
+            exportProcess.join()
+            if exportProcess.exitcode:
+                logFile.seek(0)
+                logData = logFile.read().decode("utf-8")
+                showMessageDialog(
+                    "The font could not be exported",
+                    "The reason is not clear.",
+                    detailedText=logData,
+                )
 
 
-async def exportFontToPath(sourcePath, destPath, fileExtension):
+def exportFontToPath(sourcePath, destPath, fileExtension, logFilePath):
+    with open(logFilePath, "w") as logFile:
+        # sys.stdout = sys.stderr = logFile
+
+        with redirect_stdout(logFile), redirect_stderr(logFile):
+            asyncio.run(exportFontToPathAsync(sourcePath, destPath, fileExtension))
+
+        logFile.flush()
+
+
+async def exportFontToPathAsync(sourcePath, destPath, fileExtension):
+    sourcePath = pathlib.Path(sourcePath)
+    destPath = pathlib.Path(destPath)
+
     if fileExtension in {"ttf", "otf"}:
-        raise NotImplementedError(fileExtension)
+        from fontra.workflow.workflow import Workflow
+
+        continueOnError = False
+        config = dict(
+            steps=[
+                dict(filter="decompose-composites", onlyVariableComposites=True),
+                dict(filter="drop-unreachable-glyphs"),
+                dict(
+                    output="compile-fontmake",
+                    destination=destPath.name,
+                    options=dict(verbose="DEBUG"),
+                ),
+            ]
+        )
+
+        workflow = Workflow(config=config, parentDir=sourcePath.parent)
+
+        async with workflow.endPoints() as endPoints:
+            assert endPoints.endPoint is not None
+
+            for output in endPoints.outputs:
+                await output.process(destPath.parent, continueOnError=continueOnError)
     else:
         sourceBackend = getFileSystemBackend(sourcePath)
         destBackend = newFileSystemBackend(destPath)
@@ -321,7 +367,7 @@ def showMessageDialog(
     dialog.setText(message)
     dialog.setInformativeText(infoText)
     if detailedText is not None:
-        dialog.setStyleSheet("QTextEdit { font-family: monospace; }")
+        dialog.setStyleSheet("QTextEdit { font-weight: regular; }")
         dialog.setDetailedText(detailedText)
     dialog.exec()
 
