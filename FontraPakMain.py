@@ -289,6 +289,8 @@ async def exportFontToPathAsync(sourcePath, destPath, fileExtension):
     sourcePath = pathlib.Path(sourcePath)
     destPath = pathlib.Path(destPath)
 
+    sourceBackend = getFileSystemBackend(sourcePath)
+
     if fileExtension in {"ttf", "otf"}:
         from fontra.workflow.workflow import Workflow
 
@@ -307,13 +309,12 @@ async def exportFontToPathAsync(sourcePath, destPath, fileExtension):
 
         workflow = Workflow(config=config, parentDir=sourcePath.parent)
 
-        async with workflow.endPoints() as endPoints:
+        async with workflow.endPoints(sourceBackend) as endPoints:
             assert endPoints.endPoint is not None
 
             for output in endPoints.outputs:
                 await output.process(destPath.parent, continueOnError=continueOnError)
     else:
-        sourceBackend = getFileSystemBackend(sourcePath)
         destBackend = newFileSystemBackend(destPath)
         async with aclosing(sourceBackend), aclosing(destBackend):
             await copyFont(sourceBackend, destBackend)
