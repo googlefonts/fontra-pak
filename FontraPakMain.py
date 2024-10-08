@@ -9,7 +9,7 @@ import sys
 import tempfile
 import threading
 import webbrowser
-from contextlib import aclosing, redirect_stderr, redirect_stdout
+from contextlib import aclosing
 from urllib.parse import quote
 
 from fontra import __version__ as fontraVersion
@@ -36,6 +36,7 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPlainTextEdit,
+    QProgressDialog,
     QPushButton,
     QSizePolicy,
     QVBoxLayout,
@@ -264,36 +265,63 @@ class FontraMainWidget(QMainWindow):
             target=exportFontToPath,
             args=(sourcePath, destPath, fileExtension, logFilePath),
         )
+
+        cancelled = False
+
+        def cancelExport():
+            nonlocal cancelled
+            cancelled = True
+            os.kill(exportProcess.pid, signal.SIGINT)
+
+        progressDialog = QProgressDialog(
+            f"Exporting {os.path.basename(destPath)}", "Cancel", 0, 0, self
+        )
+        progressCancelButton = QPushButton("Cancel")
+        progressCancelButton.clicked.connect(cancelExport)
+
+        progressDialog.setCancelButton(progressCancelButton)
+        progressDialog.setWindowTitle(f"Export as {fileExtension}")
+        progressDialog.show()
+
         exportProcess.start()
+
+        def exportFinished():
+            if cancelled:
+                return
+
+            progressDialog.cancel()
+
+            try:
+                if exportProcess.exitcode:
+                    with open(logFilePath, encoding="utf-8") as logFile:
+                        logFile.seek(0)
+                        logData = logFile.read()
+                        logLines = logData.splitlines()
+                        infoText = (
+                            logLines[-1] if logLines else "The reason is not clear."
+                        )
+                        showMessageDialog(
+                            "The font could not be exported",
+                            infoText,
+                            detailedText=logData,
+                        )
+            finally:
+                os.unlink(logFilePath)
 
         def exportProcessJoin():
             exportProcess.join()
-            callInMainThread(self._exportFinished, exportProcess, logFilePath)
+            callInMainThread(exportFinished)
 
         callInNewThread(exportProcessJoin)
 
-    def _exportFinished(self, exportProcess, logFilePath):
-        try:
-            if exportProcess.exitcode:
-                with open(logFilePath, encoding="utf-8") as logFile:
-                    logFile.seek(0)
-                    logData = logFile.read()
-                    logLines = logData.splitlines()
-                    infoText = logLines[-1] if logLines else "The reason is not clear."
-                    showMessageDialog(
-                        "The font could not be exported", infoText, detailedText=logData
-                    )
-        finally:
-            os.unlink(logFilePath)
-
 
 def exportFontToPath(sourcePath, destPath, fileExtension, logFilePath):
-    with open(logFilePath, "w") as logFile:
-        # sys.stdout = sys.stderr = logFile
+    logFile = open(logFilePath, "w")
+    sys.stdout = sys.stderr = logFile
 
-        with redirect_stdout(logFile), redirect_stderr(logFile):
-            asyncio.run(exportFontToPathAsync(sourcePath, destPath, fileExtension))
-
+    try:
+        asyncio.run(exportFontToPathAsync(sourcePath, destPath, fileExtension))
+    finally:
         logFile.flush()
 
 
