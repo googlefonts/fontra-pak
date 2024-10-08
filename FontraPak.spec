@@ -9,8 +9,9 @@ hiddenimports = []
 
 modules_to_collect_all = [
     "fontra",
-    "fontra_rcjk",
+    "fontra_compile",
     "fontra_glyphs",
+    "fontra_rcjk",
     "openstep_plist",
     "glyphsLib.data",
 ]
