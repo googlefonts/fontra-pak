@@ -7,6 +7,7 @@ import secrets
 import signal
 import sys
 import tempfile
+import threading
 import webbrowser
 from contextlib import aclosing, redirect_stderr, redirect_stdout
 from urllib.parse import quote
@@ -25,7 +26,6 @@ from PyQt6.QtCore import (
     QSettings,
     QSize,
     Qt,
-    QThread,
     QTimer,
     pyqtSignal,
 )
@@ -396,77 +396,65 @@ def runFontraServer(port, queue):
     server.run(showLaunchBanner=False)
 
 
-class QueueFetchWorker(QObject):
-    fetched = pyqtSignal(str)
-    finished = pyqtSignal()
+class CallInMainThreadScheduler(QObject):
+    signal = pyqtSignal(str)
 
-    def __init__(self, queue):
+    def __init__(self):
         super().__init__()
-        self.queue = queue
+        self.signal.connect(self.receive)
         self.items = {}
 
-    def run(self):
-        while True:
-            item = self.queue.get()
-            if item is None:
-                break
+    def receive(self, identifier):
+        assert threading.current_thread() is threading.main_thread()
+        function, args, kwargs = self.items.pop(identifier)
+        function(*args, **kwargs)
 
-            identifier = secrets.token_hex(4)
-            self.items[identifier] = item
-
-            self.fetched.emit(identifier)
-
-        self.finished.emit()
-
-    def popItem(self, identifier):
-        return self.items.pop(identifier)
+    def schedule(self, function, args, kwargs):
+        identifier = secrets.token_hex(4)
+        self.items[identifier] = function, args, kwargs
+        self.signal.emit(identifier)
 
 
-class AppMediator:
-    def __init__(self):
-        self.queue = multiprocessing.Queue()
-        self.thread = QThread()
-        self.queueWorker = QueueFetchWorker(self.queue)
-        self.queueWorker.moveToThread(self.thread)
-        self.thread.started.connect(self.queueWorker.run)
-        self.queueWorker.finished.connect(self.thread.quit)
-        self.queueWorker.finished.connect(self.queueWorker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.thread.start()
+_callInMainThreadScheduler = CallInMainThreadScheduler()
 
-    def connect(self, callback):
-        self.callback = callback
-        self.queueWorker.fetched.connect(self._callback)
 
-    def _callback(self, identifier):
-        self.callback(self.queueWorker.popItem(identifier))
+def callInMainThread(function, *args, **kwargs):
+    _callInMainThreadScheduler.schedule(function, args, kwargs)
 
-    def close(self):
-        self.queue.put(None)
-        self.thread.quit()
-        self.thread.wait()
+
+def queueGetter(queue, callback):
+    while True:
+        item = queue.get()
+        if item is None:
+            break
+
+        callInMainThread(callback, item)
 
 
 def main():
-    mediator = AppMediator()
+    queue = multiprocessing.Queue()
 
     port = findFreeTCPPort()
-    serverProcess = multiprocessing.Process(
-        target=runFontraServer, args=(port, mediator.queue)
-    )
+    serverProcess = multiprocessing.Process(target=runFontraServer, args=(port, queue))
 
     serverProcess.start()
 
     app = FontraApplication(sys.argv, port)
 
     def cleanup():
-        mediator.close()
+        queue.put(None)
+        thread.join()
         os.kill(serverProcess.pid, signal.SIGINT)
 
     app.aboutToQuit.connect(cleanup)
 
     mainWindow = FontraMainWidget(port)
-    mediator.connect(mainWindow.messageFromServer)
+
+    thread = threading.Thread(
+        target=queueGetter, args=(queue, mainWindow.messageFromServer)
+    )
+    thread.start()
+
     mainWindow.show()
 
     if "test-startup" in sys.argv:
