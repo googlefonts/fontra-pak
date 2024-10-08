@@ -259,6 +259,9 @@ class FontraMainWidget(QMainWindow):
 
         destPath = getFontPath(destPath, fileType, exportFileTypesMapping)
 
+        self.doExportAs(sourcePath, destPath, fileExtension)
+
+    def doExportAs(self, sourcePath, destPath, fileExtension):
         logFilePath = tempfile.NamedTemporaryFile().name
 
         exportProcess = multiprocessing.Process(
