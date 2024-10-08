@@ -221,9 +221,7 @@ class FontraMainWidget(QMainWindow):
         try:
             asyncio.run(createNewFont(fontPath))
         except Exception as e:
-            showMessageDialog(
-                "The new font could not be saved", repr(e), QMessageBox.Icon.Warning
-            )
+            showMessageDialog("The new font could not be saved", repr(e))
             return
 
         if os.path.exists(fontPath):
@@ -259,12 +257,15 @@ class FontraMainWidget(QMainWindow):
 
         destPath = getFontPath(destPath, fileType, exportFileTypesMapping)
 
-        asyncio.run(exportFontToPath(sourcePath, destPath, fileExtension))
+        try:
+            asyncio.run(exportFontToPath(sourcePath, destPath, fileExtension))
+        except Exception as e:
+            showMessageDialog("The font could not be exported", repr(e))
 
 
 async def exportFontToPath(sourcePath, destPath, fileExtension):
     if fileExtension in {"ttf", "otf"}:
-        raise NotImplementedError()
+        raise NotImplementedError(fileExtension)
     else:
         sourceBackend = getFileSystemBackend(sourcePath)
         destBackend = newFileSystemBackend(destPath)
@@ -311,12 +312,17 @@ def openFile(path, port, sampleText="Hello"):
     webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
 
 
-def showMessageDialog(message, infoText, icon=None):
+def showMessageDialog(
+    message, infoText, detailedText=None, icon=QMessageBox.Icon.Warning
+):
     dialog = QMessageBox()
     if icon is not None:
         dialog.setIcon(icon)
     dialog.setText(message)
     dialog.setInformativeText(infoText)
+    if detailedText is not None:
+        dialog.setStyleSheet("QTextEdit { font-family: monospace; }")
+        dialog.setDetailedText(detailedText)
     dialog.exec()
 
 
