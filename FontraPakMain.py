@@ -302,7 +302,7 @@ async def exportFontToPathAsync(sourcePath, destPath, fileExtension):
                 dict(
                     output="compile-fontmake",
                     destination=destPath.name,
-                    options=dict(verbose="DEBUG"),
+                    options={"verbose": "DEBUG", "overlaps-backend": "pathops"},
                 ),
             ]
         )
