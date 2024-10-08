@@ -268,10 +268,10 @@ class FontraMainWidget(QMainWindow):
             if exportProcess.exitcode:
                 logFile.seek(0)
                 logData = logFile.read().decode("utf-8")
+                logLines = logData.splitlines()
+                infoText = logLines[-1] if logLines else "The reason is not clear."
                 showMessageDialog(
-                    "The font could not be exported",
-                    "The reason is not clear.",
-                    detailedText=logData,
+                    "The font could not be exported", infoText, detailedText=logData
                 )
 
 
