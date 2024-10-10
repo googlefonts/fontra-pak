@@ -12,6 +12,7 @@ modules_to_collect_all = [
     "fontra_compile",
     "fontra_glyphs",
     "fontra_rcjk",
+    "cffsubr",
     "openstep_plist",
     "glyphsLib.data",
 ]
