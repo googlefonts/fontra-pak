@@ -15,7 +15,7 @@ from urllib.parse import quote
 from fontra import __version__ as fontraVersion
 from fontra.backends import getFileSystemBackend, newFileSystemBackend
 from fontra.backends.copy import copyFont
-from fontra.core.classes import FontSource, LineMetric
+from fontra.core.classes import DiscreteFontAxis, FontSource, LineMetric
 from fontra.core.server import FontraServer, findFreeTCPPort
 from fontra.core.urlfragment import dumpURLFragment
 from fontra.filesystem.projectmanager import FileSystemProjectManager
@@ -338,8 +338,22 @@ async def exportFontToPathAsync(sourcePath, destPath, fileExtension):
         from fontra.workflow.workflow import Workflow
 
         continueOnError = False
+
+        # For now, we drop discrete axes, and only export the default
+        axes = await sourceBackend.getAxes()
+        discreteAxisNames = [
+            axis.name for axis in axes.axes if isinstance(axis, DiscreteFontAxis)
+        ]
+
+        dropDiscreteAxes = (
+            [dict(filter="subset-axes", dropAxisNames=discreteAxisNames)]
+            if discreteAxisNames
+            else []
+        )
+
         config = dict(
-            steps=[
+            steps=dropDiscreteAxes
+            + [
                 dict(filter="decompose-composites", onlyVariableComposites=True),
                 dict(filter="drop-unreachable-glyphs"),
                 dict(
