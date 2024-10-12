@@ -29,7 +29,11 @@ from packaging.utils import parse_wheel_filename
 # - `pip install --force build/universal_wheels/*.whl`
 #
 
-python_versions = {f"cp{sys.version_info.major}{sys.version_info.minor}", "py3"}
+python_versions = [
+    f"cp{sys.version_info.major}{minor}"
+    for minor in range(8, sys.version_info.minor + 1)
+] + ["py3"]
+python_versions_sort_map = {v: i for i, v in enumerate(python_versions)}
 
 
 class IncompatibleWheelError(Exception):
@@ -112,9 +116,19 @@ def main():
         universal_wheels = []
         platform_wheels = []
 
-        for file_descriptor in data["urls"]:
-            if file_descriptor["python_version"] not in python_versions:
-                continue
+        file_descriptors = sorted(
+            [
+                file_descriptor
+                for file_descriptor in data["urls"]
+                if file_descriptor["python_version"] in python_versions_sort_map
+            ],
+            lambda file_descriptor: python_versions_sort_map[
+                file_descriptor["python_version"]
+            ],
+        )
+
+        if file_descriptors:
+            file_descriptor = file_descriptors[-1]
             wheel_filename = file_descriptor["filename"]
             package, version, build, tags = parse_wheel_filename(wheel_filename)
             if any("macosx" in tag.platform for tag in tags):
