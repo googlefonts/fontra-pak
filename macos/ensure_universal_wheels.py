@@ -32,8 +32,8 @@ from packaging.utils import parse_wheel_filename
 python_versions = [
     f"cp{sys.version_info.major}{minor}"
     for minor in range(8, sys.version_info.minor + 1)
-] + ["py3"]
-python_versions_sort_map = {v: i for i, v in enumerate(python_versions)}
+]
+python_versions.reverse()
 
 
 class IncompatibleWheelError(Exception):
@@ -116,19 +116,23 @@ def main():
         universal_wheels = []
         platform_wheels = []
 
-        file_descriptors = sorted(
-            [
+        for python_version in python_versions:
+            file_descriptors = [
                 file_descriptor
                 for file_descriptor in data["urls"]
-                if file_descriptor["python_version"] in python_versions_sort_map
-            ],
-            key=lambda file_descriptor: python_versions_sort_map[
-                file_descriptor["python_version"]
-            ],
-        )
+                if file_descriptor["python_version"] == python_version
+            ]
+            if file_descriptors:
+                break
 
-        if file_descriptors:
-            file_descriptor = file_descriptors[-1]
+        if not file_descriptors:
+            file_descriptors = [
+                file_descriptor
+                for file_descriptor in data["urls"]
+                if file_descriptor["python_version"] == "py3"
+            ]
+
+        for file_descriptor in file_descriptors:
             wheel_filename = file_descriptor["filename"]
             package, version, build, tags = parse_wheel_filename(wheel_filename)
             if any("macosx" in tag.platform for tag in tags):
