@@ -122,7 +122,7 @@ def main():
                 for file_descriptor in data["urls"]
                 if file_descriptor["python_version"] in python_versions_sort_map
             ],
-            lambda file_descriptor: python_versions_sort_map[
+            key=lambda file_descriptor: python_versions_sort_map[
                 file_descriptor["python_version"]
             ],
         )
