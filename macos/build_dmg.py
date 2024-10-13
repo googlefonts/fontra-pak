@@ -28,7 +28,7 @@ with tempfile.TemporaryDirectory() as imgPath:
                 "-fs",
                 "HFS+",
                 "-size",
-                "200m",
+                "300m",
                 "-srcfolder",
                 imgPath,
                 "-volname",
