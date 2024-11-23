@@ -259,6 +259,8 @@ class FontraMainWidget(QMainWindow):
 
         destPath = getFontPath(destPath, fileType, exportFileTypesMapping)
 
+        self.settings.setValue("activeFolder", os.path.dirname(destPath))
+
         self.doExportAs(sourcePath, destPath, fileExtension)
 
     def doExportAs(self, sourcePath, destPath, fileExtension):
