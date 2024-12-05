@@ -27,7 +27,14 @@ def printNotarizeLog(submissionID, appleID, teamID, password):
     print(result.stdout)
 
 
-notarizeResult = json.loads(sys.stdin.read().encode("ascii"))
+notatizeResultRaw = sys.stdin.read().encode("ascii")
+try:
+    notarizeResult = json.loads(notatizeResultRaw)
+except json.JSONDecodeError:
+    print("------ error decoding JSON ------")
+    print(notatizeResultRaw)
+    print("---------------------------------")
+    raise
 
 submissionID = notarizeResult.get("id")
 
