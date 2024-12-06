@@ -32,6 +32,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
+    QGridLayout,
     QLabel,
     QMainWindow,
     QMessageBox,
@@ -41,7 +42,6 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
-    QGridLayout,
 )
 
 commonCSS = """
@@ -150,21 +150,21 @@ class FontraMainWidget(QMainWindow):
         )
         self.label.setWordWrap(True)
 
-        layout = QGridLayout()  # Helpful: https://www.pythontutorial.net/pyqt/pyqt-qgridlayout/
+        layout = (
+            QGridLayout()
+        )  # Helpful: https://www.pythontutorial.net/pyqt/pyqt-qgridlayout/
 
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
 
         buttonDocs = QPushButton("?", self)
-        buttonDocs.setToolTip('Link to <b>documentation</b>')
+        buttonDocs.setToolTip("Link to <b>documentation</b>")
         buttonDocs.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        buttonDocs.clicked.connect(lambda: webbrowser.open('http://docs.fontra.xyz'))
+        buttonDocs.clicked.connect(lambda: webbrowser.open("http://docs.fontra.xyz"))
 
-        layout.addWidget(button, 0, 0,
-                         alignment=Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(buttonDocs, 0, 1,
-                         alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(button, 0, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(buttonDocs, 0, 1, alignment=Qt.AlignmentFlag.AlignRight)
 
         layout.addWidget(self.label, 1, 0, 1, 2)
 
