@@ -41,6 +41,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
+    QGridLayout,
 )
 
 commonCSS = """
@@ -149,14 +150,23 @@ class FontraMainWidget(QMainWindow):
         )
         self.label.setWordWrap(True)
 
-        layout = QVBoxLayout()
+        layout = QGridLayout()  # Helpful: https://www.pythontutorial.net/pyqt/pyqt-qgridlayout/
 
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
 
-        layout.addWidget(button)
-        layout.addWidget(self.label)
+        buttonDocs = QPushButton("&?", self)
+        buttonDocs.setToolTip('Opens the <b>documentation</b>')
+        buttonDocs.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        buttonDocs.clicked.connect(lambda: webbrowser.open('http://docs.fontra.xyz'))
+
+        layout.addWidget(button, 0, 0,
+                         alignment=Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(buttonDocs, 0, 1,
+                         alignment=Qt.AlignmentFlag.AlignRight)
+
+        layout.addWidget(self.label, 1, 0, 1, 2)
 
         self.textBox = QPlainTextEdit(self.settings.value("sampleText", "Hello"), self)
         self.textBox.setFixedHeight(50)
@@ -164,9 +174,9 @@ class FontraMainWidget(QMainWindow):
         self.textBox.textChanged.connect(
             lambda: self.settings.setValue("sampleText", self.textBox.toPlainText())
         )
-        layout.addWidget(QLabel("Initial sample text:"))
-        layout.addWidget(self.textBox)
-        layout.addWidget(QLabel(f"Fontra version {fontraVersion}"))
+        layout.addWidget(QLabel("Initial sample text:"), 2, 0)
+        layout.addWidget(self.textBox, 3, 0, 1, 2)
+        layout.addWidget(QLabel(f"Fontra version {fontraVersion}"), 4, 0)
 
         widget = QWidget()
         widget.setLayout(layout)
