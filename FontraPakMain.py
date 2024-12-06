@@ -149,9 +149,8 @@ class FontraMainWidget(QMainWindow):
         )
         self.label.setWordWrap(True)
 
-        layout = (
-            QGridLayout()
-        )  # Helpful: https://www.pythontutorial.net/pyqt/pyqt-qgridlayout/
+        # Helpful: https://www.pythontutorial.net/pyqt/pyqt-qgridlayout/
+        layout = QGridLayout()
 
         button = QPushButton("&New Font...", self)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
