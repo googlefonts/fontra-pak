@@ -160,7 +160,7 @@ class FontraMainWidget(QMainWindow):
         buttonDocs = QPushButton("?", self)
         buttonDocs.setToolTip("Link to <b>documentation</b>")
         buttonDocs.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        buttonDocs.clicked.connect(lambda: webbrowser.open("http://docs.fontra.xyz"))
+        buttonDocs.clicked.connect(lambda: webbrowser.open("https://docs.fontra.xyz"))
 
         layout.addWidget(button, 0, 0, alignment=Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(buttonDocs, 0, 1, alignment=Qt.AlignmentFlag.AlignRight)
