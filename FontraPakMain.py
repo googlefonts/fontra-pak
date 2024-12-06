@@ -40,7 +40,6 @@ from PyQt6.QtWidgets import (
     QProgressDialog,
     QPushButton,
     QSizePolicy,
-    QVBoxLayout,
     QWidget,
 )
 
