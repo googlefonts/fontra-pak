@@ -157,7 +157,7 @@ class FontraMainWidget(QMainWindow):
         button.clicked.connect(self.newFont)
 
         buttonDocs = QPushButton("?", self)
-        buttonDocs.setToolTip('Opens the <b>documentation</b>')
+        buttonDocs.setToolTip('Link to <b>documentation</b>')
         buttonDocs.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         buttonDocs.clicked.connect(lambda: webbrowser.open('http://docs.fontra.xyz'))
 
