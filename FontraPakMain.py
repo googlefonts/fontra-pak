@@ -269,6 +269,15 @@ class FontraMainWidget(QMainWindow):
 
         self.settings.setValue("activeFolder", os.path.dirname(destPath))
 
+        destPath = pathlib.Path(destPath)
+
+        if sourcePath == destPath:
+            showMessageDialog(
+                "Cannot export font",
+                "The destination file cannot be the same as the source file",
+            )
+            return
+
         self.doExportAs(sourcePath, destPath, fileExtension)
 
     def doExportAs(self, sourcePath, destPath, fileExtension):
