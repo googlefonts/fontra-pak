@@ -450,6 +450,8 @@ def showMessageDialog(
 
 
 class FontraPakProjectManager(FileSystemProjectManager):
+    supportedExportFormats = [typ for (name, typ) in exportFileTypes]
+
     async def exportAs(self, fontHandler, options):
         self.appQueue.put(("exportAs", fontHandler.projectIdentifier, options))
 
