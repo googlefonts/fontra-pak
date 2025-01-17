@@ -419,7 +419,7 @@ def openFile(path, port):
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
 
-    webbrowser.open(f"http://localhost:{port}/fontoverview/-/{path}")
+    webbrowser.open(f"http://localhost:{port}/fontoverview/?project={path}")
 
 
 def showMessageDialog(
