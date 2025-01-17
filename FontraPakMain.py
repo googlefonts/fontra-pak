@@ -393,6 +393,9 @@ defaultLineMetrics = {
 }
 
 
+PROJECT_GLYPH_SETS_CUSTOM_DATA_KEY = "fontra.projectGlyphSets"
+
+
 async def createNewFont(fontPath):
     # Create a new empty project on disk
     import secrets
@@ -405,8 +408,21 @@ async def createNewFont(fontPath):
         },
     )
 
+    customData = {
+        PROJECT_GLYPH_SETS_CUSTOM_DATA_KEY: [
+            {
+                "name": "GF Latin Kernel",
+                "url": (
+                    "https://raw.githubusercontent.com/googlefonts/glyphsets/"
+                    + "main/data/results/txt/nice-names/GF_Latin_Kernel.txt"
+                ),
+            },
+        ]
+    }
+
     destBackend = newFileSystemBackend(fontPath)
     await destBackend.putSources({secrets.token_hex(4): defaultSource})
+    await destBackend.putCustomData(customData)
     await destBackend.aclose()
 
 
