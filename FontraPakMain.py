@@ -17,7 +17,6 @@ from fontra.backends import getFileSystemBackend, newFileSystemBackend
 from fontra.backends.copy import copyFont
 from fontra.core.classes import DiscreteFontAxis, FontSource, LineMetric
 from fontra.core.server import FontraServer, findFreeTCPPort
-from fontra.core.urlfragment import dumpURLFragment
 from fontra.filesystem.projectmanager import FileSystemProjectManager
 from PyQt6.QtCore import (
     QEvent,
@@ -36,7 +35,6 @@ from PyQt6.QtWidgets import (
     QLabel,
     QMainWindow,
     QMessageBox,
-    QPlainTextEdit,
     QProgressDialog,
     QPushButton,
     QSizePolicy,
@@ -166,14 +164,6 @@ class FontraMainWidget(QMainWindow):
 
         layout.addWidget(self.label, 1, 0, 1, 2)
 
-        self.textBox = QPlainTextEdit(self.settings.value("sampleText", "Hello"), self)
-        self.textBox.setFixedHeight(50)
-
-        self.textBox.textChanged.connect(
-            lambda: self.settings.setValue("sampleText", self.textBox.toPlainText())
-        )
-        layout.addWidget(QLabel("Initial sample text:"), 2, 0)
-        layout.addWidget(self.textBox, 3, 0, 1, 2)
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"), 4, 0)
 
         widget = QWidget()
@@ -200,8 +190,7 @@ class FontraMainWidget(QMainWindow):
         self.label.setStyleSheet(neutralCSS)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for path in files:
-            textboxValue = self.textBox.toPlainText()
-            openFile(path, self.port, sampleText=textboxValue)
+            openFile(path, self.port)
         event.acceptProposedAction()
 
     @property
@@ -235,8 +224,7 @@ class FontraMainWidget(QMainWindow):
             return
 
         if os.path.exists(fontPath):
-            textboxValue = self.textBox.toPlainText()
-            openFile(fontPath, self.port, sampleText=textboxValue)
+            openFile(fontPath, self.port)
 
     def messageFromServer(self, item):
         action, path, options = item
@@ -405,6 +393,9 @@ defaultLineMetrics = {
 }
 
 
+PROJECT_GLYPH_SETS_CUSTOM_DATA_KEY = "fontra.projectGlyphSets"
+
+
 async def createNewFont(fontPath):
     # Create a new empty project on disk
     import secrets
@@ -417,12 +408,25 @@ async def createNewFont(fontPath):
         },
     )
 
+    customData = {
+        PROJECT_GLYPH_SETS_CUSTOM_DATA_KEY: [
+            {
+                "name": "GF Latin Kernel",
+                "url": (
+                    "https://raw.githubusercontent.com/googlefonts/glyphsets/"
+                    + "main/data/results/txt/nice-names/GF_Latin_Kernel.txt"
+                ),
+            },
+        ]
+    }
+
     destBackend = newFileSystemBackend(fontPath)
     await destBackend.putSources({secrets.token_hex(4): defaultSource})
+    await destBackend.putCustomData(customData)
     await destBackend.aclose()
 
 
-def openFile(path, port, sampleText="Hello"):
+def openFile(path, port):
     path = pathlib.Path(path).resolve()
     assert path.is_absolute()
     parts = list(path.parts)
@@ -431,8 +435,7 @@ def openFile(path, port, sampleText="Hello"):
         del parts[0]
     path = "/".join(quote(part, safe="") for part in parts)
 
-    urlFragment = dumpURLFragment({"text": sampleText})
-    webbrowser.open(f"http://localhost:{port}/editor/-/{path}{urlFragment}")
+    webbrowser.open(f"http://localhost:{port}/fontoverview/?project={path}")
 
 
 def showMessageDialog(
