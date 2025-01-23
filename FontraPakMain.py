@@ -416,6 +416,8 @@ async def createNewFont(fontPath):
                     "https://raw.githubusercontent.com/googlefonts/glyphsets/"
                     + "main/data/results/txt/nice-names/GF_Latin_Kernel.txt"
                 ),
+                "dataFormat": "glyph-names",
+                "commentChars": "#",
             },
         ]
     }
