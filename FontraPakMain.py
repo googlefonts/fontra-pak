@@ -176,9 +176,13 @@ class FontraMainWidget(QMainWindow):
 
         if downloadLink is not None:
             buttonDownload = QPushButton("Download latest Fontra Pak", self)
-            buttonDownload.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+            buttonDownload.setSizePolicy(
+                QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
+            )
             buttonDownload.clicked.connect(lambda: webbrowser.open(downloadLink))
-            layout.addWidget(buttonDownload, 4, 1, alignment=Qt.AlignmentFlag.AlignRight)
+            layout.addWidget(
+                buttonDownload, 4, 1, alignment=Qt.AlignmentFlag.AlignRight
+            )
 
         widget = QWidget()
         widget.setLayout(layout)
