@@ -154,7 +154,7 @@ class FontraMainWidget(QMainWindow):
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.clicked.connect(self.newFont)
 
-        buttonDocs = QPushButton("?", self)
+        buttonDocs = QPushButton("Documentation", self)
         buttonDocs.setToolTip("Open documentation website")
         buttonDocs.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         buttonDocs.clicked.connect(lambda: webbrowser.open("https://docs.fontra.xyz"))
@@ -165,6 +165,24 @@ class FontraMainWidget(QMainWindow):
         layout.addWidget(self.label, 1, 0, 1, 2)
 
         layout.addWidget(QLabel(f"Fontra version {fontraVersion}"), 4, 0)
+
+        if sys.platform == "darwin":
+            downloadLink = "https://fontra-download.black-foundry.com/FontraPak.dmg"
+        elif sys.platform == "win32":
+            downloadLink = "https://fontra-download.black-foundry.com/FontraPak.zip"
+        else:
+            # We don't provide downloads for other platforms.
+            downloadLink = None
+
+        if downloadLink is not None:
+            buttonDownload = QPushButton("Download latest Fontra Pak", self)
+            buttonDownload.setSizePolicy(
+                QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
+            )
+            buttonDownload.clicked.connect(lambda: webbrowser.open(downloadLink))
+            layout.addWidget(
+                buttonDownload, 4, 1, alignment=Qt.AlignmentFlag.AlignRight
+            )
 
         widget = QWidget()
         widget.setLayout(layout)
