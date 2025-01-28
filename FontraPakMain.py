@@ -171,7 +171,7 @@ class FontraMainWidget(QMainWindow):
         elif sys.platform == "win32":
             downloadLink = "https://fontra-download.black-foundry.com/FontraPak.zip"
         else:
-            # We don't have Linux support.
+            # We don't provide downloads for other platforms.
             downloadLink = None
 
         if downloadLink is not None:
