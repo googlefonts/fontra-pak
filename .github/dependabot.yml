@@ -16,3 +16,7 @@ updates:
       # we'll stick to PyQt6==6.4.2 and PyQt6-Qt6==6.4.3
       - dependency-name: "PyQt6"
       - dependency-name: "PyQt6-Qt6"
+    groups:
+      python-packages:
+        patterns:
+          - "*"
