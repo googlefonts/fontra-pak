@@ -148,10 +148,48 @@ jobs:
         with:
           name: FontraPakWindows
           path: ./dist/*.exe
+    build-ubuntu-binary:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Git checkout
+          uses: actions/checkout@v4
+
+        - name: Set up Python 3.10
+          uses: actions/setup-python@v5
+          with:
+            python-version: "3.10"
+
+        - name: Install dependencies
+          run: |
+            python3 -m pip install --upgrade pip
+            python3 -m pip install -r requirements.txt
+            python3 -m pip install -r requirements-dev.txt
+
+        - name: Build exe
+          run: |
+            pyinstaller FontraPak.spec -y
+            mv dist/Fontra\ Pak dist/fontrapak
+
+        - name: Run tests
+          run: |
+            pytest
+
+        - name: Query __version__ string and add to version.txt
+          id: query-version
+          run: |
+            echo $(python -c "import fontra; print(fontra.__version__)") > ./dist/version.txt
+
+        - name: Storing Ubuntu Artifacts
+          id: upload_artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: fontrapak
+            path: ./dist/*
 
   upload-to-download-server:
     runs-on: ubuntu-latest
-    needs: [build-macos-app, build-windows-exe]
+    needs: [build-macos-app, build-windows-exe, build-ubuntu-binary]
     if: github.ref == 'refs/heads/main'
 
     steps:
@@ -166,6 +204,14 @@ jobs:
           cd ./downloaded-artifact/FontraPakWindows
           zip -q FontraPak.zip "Fontra Pak.exe"
 
+      - name: make ubuntu binary executable
+        run: chmod +x ./downloaded-artifact/fontrapak/fontrapak
+
+      - name: tar gzip ubuntu-binary and version.txt
+        run: |
+          cd ./downloaded-artifact
+          tar -czvf fontrapak.tgz "fontrapak"
+
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: ./downloaded-artifact
@@ -176,7 +222,7 @@ jobs:
           host: ${{ secrets.FONTRA_DOWNLOAD_HOST }}
           username: ${{ secrets.FONTRA_DOWNLOAD_USERNAME }}
           password: ${{ secrets.FONTRA_DOWNLOAD_PASSWORD }}
-          source: "./downloaded-artifact/FontraPakMacOS/FontraPak.dmg,./downloaded-artifact/FontraPakWindows/FontraPak.zip"
+          source: "./downloaded-artifact/FontraPakMacOS/FontraPak.dmg,./downloaded-artifact/FontraPakWindows/FontraPak.zip, ./downloaded-artifact/fontrapak.tgz"
           target: "/home/fontra/public-html/"
           strip_components: 3
           debug: true
