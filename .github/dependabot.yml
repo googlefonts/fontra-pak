@@ -16,6 +16,8 @@ updates:
       # we'll stick to PyQt6==6.4.2 and PyQt6-Qt6==6.4.3
       - dependency-name: "PyQt6"
       - dependency-name: "PyQt6-Qt6"
+      # later setuptools cause pkg_resources warnings, let's pin for now
+      - dependency-name: "setuptools"
     groups:
       python-packages:
         patterns:
