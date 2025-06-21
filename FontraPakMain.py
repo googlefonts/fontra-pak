@@ -480,7 +480,7 @@ class FontraPakProjectManager(FileSystemProjectManager):
         self.appQueue.put(("exportAs", fontHandler.projectIdentifier, options))
 
 
-def runFontraServer(port, queue):
+def runFontraServer(host, port, queue):
     logging.basicConfig(
         format="%(asctime)s %(name)-17s %(levelname)-8s %(message)s",
         level=logging.INFO,
@@ -489,7 +489,7 @@ def runFontraServer(port, queue):
     manager = FontraPakProjectManager(None)
     manager.appQueue = queue
     server = FontraServer(
-        host="localhost",
+        host=host,
         httpPort=port,
         projectManager=manager,
         versionToken=secrets.token_hex(4),
@@ -541,8 +541,11 @@ def queueGetter(queue, callback):
 
 def main():
     queue = multiprocessing.Queue()
-    port = findFreeTCPPort()
-    serverProcess = multiprocessing.Process(target=runFontraServer, args=(port, queue))
+    host = "localhost"
+    port = findFreeTCPPort(host=host)
+    serverProcess = multiprocessing.Process(
+        target=runFontraServer, args=(host, port, queue)
+    )
     serverProcess.start()
 
     app = FontraApplication(sys.argv, port)
