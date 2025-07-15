@@ -2,7 +2,7 @@ git+https://github.com/googlefonts/fontra.git
 git+https://github.com/googlefonts/fontra-compile.git
 git+https://github.com/googlefonts/fontra-rcjk.git
 git+https://github.com/googlefonts/fontra-glyphs.git
-aiohttp==3.12.13
+aiohttp==3.12.14
 pyinstaller==6.14.1
 # pin setuptools for now to avoid new pkg_resources warning
 setuptools==80.8.0  # pinned!
