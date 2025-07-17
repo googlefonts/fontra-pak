@@ -3,6 +3,7 @@ import logging
 import multiprocessing
 import os
 import pathlib
+import psutil
 import secrets
 import signal
 import sys
