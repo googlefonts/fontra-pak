@@ -1,3 +1,5 @@
+This repository is now archived. Go to https://github.com/fontra/fontra-pak for new development.
+
 # Fontra Pak
 
 Fontra Pak is a cross-platform, standalone, bundled [Fontra](https://github.com/googlefonts/fontra) application for desktop use.
